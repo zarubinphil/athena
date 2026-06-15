@@ -24,6 +24,11 @@ __pycache__/
 # Личные манифесты — реальные живут в приватном overlay, не в generic-репо
 projects.manifest
 tools.manifest
+# Локальный конфиг с приватными данными владельца — канал утечки (аудит P0.1, KGB-1)
+athena.config.sh
+# chezmoi data с боевыми значениями (vps_host и пр.) — если положен реальный файл (KGB-19)
+chezmoidata.yaml
+.chezmoidata.yaml
 .secrets/
 secrets/
 *.env
