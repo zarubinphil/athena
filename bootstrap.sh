@@ -26,9 +26,12 @@ phase(){ [ -z "$ONLY" ] || [ "$ONLY" = "$1" ]; }
 # Личная конфигурация (репо дотфайлов, vault, манифест проектов)
 CFG="$HERE/athena.config.sh"
 if [ -f "$CFG" ]; then . "$CFG"; else warn "нет athena.config.sh — скопируй из athena.config.example.sh и заполни"; fi
-: "${ATHENA_DOTFILES_REPO:=}"      # git URL приватных дотфайлов (chezmoi source) ИЛИ пусто = локальный chezmoi/
+: "${ATHENA_DOTFILES_REPO:=}"      # ПРОДВИНУТОЕ: готовый внешний chezmoi-source целиком (минует merge)
+: "${ATHENA_PRIVATE_REPO:=}"       # git URL приватного overlay (athena-private) ИЛИ пусто = generic-only
+: "${ATHENA_PRIVATE_DIR:=$HOME/Проекты/athena-private}"   # куда клонится/лежит overlay
 : "${ATHENA_VAULT_REPO:=}"         # git URL приватного vault-znaniya
 : "${ATHENA_PROJECTS_MANIFEST:=$HERE/projects.manifest}"
+MERGED="${ATHENA_MERGED_SOURCE:-$HOME/.local/share/athena-merged-source}"  # собранный generic⊕private source
 
 # ───────── Слой 0: база (Homebrew + CLI) ─────────
 layer0_base() {
@@ -41,16 +44,38 @@ layer0_base() {
   command -v claude >/dev/null && ok "claude CLI готов" || warn "claude CLI: установи Claude Code"
 }
 
-# ───────── Слой 1: Мозг (дотфайлы через chezmoi) ─────────
+# ───────── Слой 1: Мозг (дотфайлы через chezmoi merged-source) ─────────
+# Источник = generic-канон (./chezmoi) ⊕ приватный overlay (athena-private/chezmoi).
+# Overlay побеждает на конфликте; добавляет личное (references, launchd-скрипты, run_once_).
 layer1_brain() {
-  phase 1 || return 0; say "Слой 1 — Мозг (дотфайлы)"
+  phase 1 || return 0; say "Слой 1 — Мозг (дотфайлы, merged-source)"
   command -v chezmoi >/dev/null || run "brew install chezmoi"
+
+  # Продвинутый escape-hatch: готовый внешний source целиком, без merge.
   if [ -n "$ATHENA_DOTFILES_REPO" ]; then
     run "chezmoi init --apply '$ATHENA_DOTFILES_REPO'"
-  else
-    run "chezmoi init --apply --source '$HERE/chezmoi'"
+    ok "дотфайлы из внешнего source ($ATHENA_DOTFILES_REPO)"; return 0
   fi
-  ok "~/.claude · ~/.codex · ~/.agents разложены (chezmoi)"
+
+  # Клон приватного overlay, если задан репо и его ещё нет.
+  if [ -n "$ATHENA_PRIVATE_REPO" ] && [ ! -d "$ATHENA_PRIVATE_DIR/.git" ]; then
+    run "git clone '$ATHENA_PRIVATE_REPO' '$ATHENA_PRIVATE_DIR'"
+  fi
+
+  # Сборка merged-source: generic база (--delete = чистый старт) ⊕ приватный overlay.
+  run "mkdir -p '$MERGED'"
+  run "rsync -a --delete --exclude '.git' '$HERE/chezmoi/' '$MERGED/'"
+  if [ -d "$ATHENA_PRIVATE_DIR/chezmoi" ]; then
+    run "rsync -a --exclude '.git' '$ATHENA_PRIVATE_DIR/chezmoi/' '$MERGED/'"
+    ok "приватный overlay наложен ($ATHENA_PRIVATE_DIR)"
+  else
+    warn "приватный overlay не найден ($ATHENA_PRIVATE_DIR/chezmoi) — generic-only"
+  fi
+  # chezmoi-данные: если в merged нет .chezmoidata.yaml — поднять из generic-.example.
+  [ "$DRY" = 1 ] || [ -f "$MERGED/.chezmoidata.yaml" ] || cp "$MERGED/.chezmoidata.yaml.example" "$MERGED/.chezmoidata.yaml" 2>/dev/null || true
+
+  run "chezmoi init --apply --source '$MERGED'"
+  ok "~/.claude · ~/.codex · ~/.agents разложены (merged-source)"
 }
 
 # ───────── Слой 1b: плагины (reinstall из marketplaces) ─────────
@@ -79,6 +104,8 @@ layer2_registry() {
 # ───────── Слой 3: проекты (Работа) ─────────
 layer3_projects() {
   phase 3 || return 0; say "Слой 3 — проекты"
+  # Приватный манифест (athena-private) перекрывает дефолт, если есть.
+  [ -f "$ATHENA_PRIVATE_DIR/projects.manifest" ] && ATHENA_PROJECTS_MANIFEST="$ATHENA_PRIVATE_DIR/projects.manifest"
   [ -f "$ATHENA_PROJECTS_MANIFEST" ] || { warn "нет манифеста проектов — пропуск"; return 0; }
   mkdir -p "$HOME/Проекты"
   # формат строки манифеста: <git-url> <относительный путь под ~/Проекты> [install-команда]
@@ -105,12 +132,26 @@ layer5_runtime() {
   mkdir -p "$HOME/.secrets" && chmod 700 "$HOME/.secrets"
   warn "секреты: заполни по secrets-checklist.md (значения из Keychain, НЕ в git)"
   warn "MCP: переавторизуй по mcp-reauth.md"
-  if [ "$(uname)" = "Darwin" ] && [ -d "$HERE/launchd" ]; then
-    for p in "$HERE"/launchd/*.plist; do [ -e "$p" ] || continue
+  [ "$(uname)" = "Darwin" ] || { warn "не macOS — launchd пропущен"; return 0; }
+
+  # launchd: generic (./launchd) + приватные (athena-private/launchd).
+  # *.plist.example / *.plist.template не матчат *.plist → пропускаются (генерятся отдельно).
+  for dir in "$HERE/launchd" "$ATHENA_PRIVATE_DIR/launchd"; do
+    [ -d "$dir" ] || continue
+    for p in "$dir"/*.plist; do [ -e "$p" ] || continue
       tgt="$HOME/Library/LaunchAgents/$(basename "$p")"
       run "sed 's#\\\$HOME#$HOME#g' '$p' > '$tgt'"
       run "launchctl unload '$tgt' 2>/dev/null; launchctl load '$tgt'"
-    done; ok "launchd-агенты загружены"
+    done
+  done
+  ok "launchd-агенты загружены (generic + приватные)"
+
+  # telegram-бот: плист резолвит install-специфичный poetry-venv (хэш в имени venv).
+  GEN="$ATHENA_PRIVATE_DIR/bin/gen-telegram-plist.sh"
+  if [ -x "$GEN" ] && [ -d "$HOME/tools/claudecode-telegram" ]; then
+    run "'$GEN'"; ok "telegram-плист собран (poetry-venv резолв)"
+  elif [ -e "$GEN" ]; then
+    warn "telegram: бот не установлен (~/tools/claudecode-telegram) — плист пропущен"
   fi
 }
 
