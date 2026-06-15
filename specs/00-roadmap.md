@@ -8,11 +8,12 @@ Generic-репо под открытый GitHub, clean-room (боевой `~/.cl
 - [x] `rules/structure.md` — конституция раскладки
 - [x] `bootstrap.sh` — оркестратор слоёв 0–6
 - [x] `Brewfile`, `README.md`, `CLAUDE.md`, `LICENSE`
-- [ ] `projects.manifest.example`, `secrets-checklist.md`, `mcp-reauth.md`, `athena.config.example.sh`
-- [ ] `skills/organize/SKILL.md` (новый), копии `setup-os` + `bootstrap-project`
-- [ ] `smoke/smoke.sh` (паритет + линт структуры), `launchd/*.plist` шаблоны
-- [ ] git init + commit
-**DoD:** репо самодостаточно, `./bootstrap.sh --dry-run` проходит, 0 личных данных, shellcheck чист.
+- [x] `projects.manifest.example`, `secrets-checklist.md`, `mcp-reauth.md`, `athena.config.example.sh`
+- [x] `skills/organize/SKILL.md` (новый), копии `setup-os` + `bootstrap-project`
+- [x] `smoke/smoke.sh` — зелёный
+- [x] git init + commit (48 файлов)
+- [ ] `launchd/*.plist` шаблоны → переносится в Фазу 2 (с курированием chezmoi)
+**DoD:** ✓ репо самодостаточно, `./bootstrap.sh --dry-run` проходит, 0 личных данных. (shellcheck — в Brewfile, ставится на bootstrap.)
 
 ## Фаза 2 — курирование канона Мозга (chezmoi-source)
 Заново собрать лин-канон `~/.claude` по best-practices vault (CLAUDE.md ≤80–120, hot/cold, 4 слоя, deny-безопасность), НЕ дамп текущего 1.2 ГБ. Скиллы: reinstall плагинов из marketplaces + личные в chezmoi.
