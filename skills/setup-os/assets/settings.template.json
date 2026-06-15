@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/*secret*)",
+      "Read(**/*credential*)",
+      "Read(**/.ssh/**)",
+      "Read(**/id_rsa*)",
+      "Read(**/.scrapegraphai/**)",
+      "Read(**/references/secrets-map.md)",
+      "Edit(**/.env)",
+      "Write(**/.env)"
+    ]
+  },
+  "_note": "После записи — smoke-test: попытка Read .env должна блокироваться. Был баг #27040, проверь руками.",
+  "_hooks_hint": "Опц: PreToolUse hook на запрет push/deploy/delete без подтверждения; PostToolUse formatter."
+}

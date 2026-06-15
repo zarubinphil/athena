@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/*secret*)",
+      "Read(**/*credential*)",
+      "Read(**/id_rsa*)",
+      "Edit(**/.env)",
+      "Write(**/.env)"
+    ]
+  },
+  "_note": "После init — smoke-test: Read .env должен блокнуться."
+}

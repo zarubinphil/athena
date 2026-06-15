@@ -1,0 +1,11 @@
+# projects.manifest — какие проекты клонировать на новую машину (слой 3 bootstrap.sh).
+# Скопируй → projects.manifest (gitignored), впиши свои ПРИВАТНЫЕ репо.
+# Формат:  <git-url>  <путь-под-~/Проекты>  [install-команда]
+# Пустые строки и # — игнор.
+#
+# Примеры (замени на свои):
+# git@github.com:you/memory-system.git    memory    bash install.sh
+# git@github.com:you/legal-system.git     legal     bash install.sh
+# git@github.com:you/web-app.git          app       npm install
+#
+# Порядок важен: системы с общими бинарями (напр. OCR) — раньше зависящих от них.
