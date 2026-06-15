@@ -36,3 +36,6 @@ secrets/
 chezmoi/**/private_*
 .skills-snapshot.tar.zst
 smoke/*.log
+
+# Локальный IDE-конфиг
+.vscode/

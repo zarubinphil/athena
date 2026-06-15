@@ -1,7 +1,7 @@
 ---
 name: structure
 description: Конституция раскладки Athena OS — куда кладётся любой проект, знание, файл. Hot-правило, читается при старте. Источник истины организации файловой системы; при росте системы папки раскладываются по ней.
-owner: Philipp Zarubin
+owner: <your-name>
 last-reviewed: 2026-06-15
 review-cadence: на каждом ретро и при росте системы
 conflict-check: не противоречит ~/.claude/CLAUDE.md, AGENTS.md, hooks; правило конкретного проекта строже общего

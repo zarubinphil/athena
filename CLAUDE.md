@@ -1,6 +1,6 @@
 # athena-os — проектная конституция
 
-Athena OS — переносимая агентная ОС: разворот всей системы Филиппа на новом Mac одной командой. Этот репо — generic/public каркас (без личных данных).
+Athena OS — переносимая агентная ОС: разворот всей системы владельца на новом Mac одной командой. Этот репо — generic/public каркас (без личных данных).
 
 ## Карта
 - `bootstrap.sh` — оркестратор слоёв 0–6 (+0b tools, idempotent, `$HOME`, читает `athena.config.sh`). Слой 1 = merged-source: generic `chezmoi/` ⊕ приватный overlay (`ATHENA_PRIVATE_REPO`, Ф4) → один `chezmoi apply`.

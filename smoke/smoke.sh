@@ -21,6 +21,13 @@ echo "[секреты] нет credential-shaped токенов (generic-патт
 SECRET_RE='(AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{20,}|xox[baprs]-[A-Za-z0-9-]{10,}|sk-[A-Za-z0-9]{24,}|-----BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY-----|root@[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})'
 chk "нет ключей/private-key/root@ip" "! grep -rInE --exclude-dir=.git --exclude='smoke.sh' --exclude='*.log' \"\$SECRET_RE\" '$HERE' >/dev/null 2>&1"
 
+echo "[личное] нет имён/usernames/приватных идентификаторов владельца"
+# Источник истины P0.2: grep, не ручной список. RED при срабатывании.
+# Исключения: smoke.sh (сам содержит паттерн), docs/audit-2026-06-16/ (внутр. акт-запись,
+#   git-rm/не-публикуется до P0.5 — НЕ часть публичного каркаса).
+PERSONAL_RE='(Philipp|Zarubin|Филипп|zarubinphil|Кирилов|Ломоносов|Менделеев|Калачов|com\.zarubin)'
+chk "нет личных данных в публичных tracked-файлах" "! grep -rIniE --exclude-dir=.git --exclude-dir=audit-2026-06-16 --exclude='smoke.sh' --exclude='*.log' \"\$PERSONAL_RE\" '$HERE' >/dev/null 2>&1"
+
 echo "[канон] chezmoi-source Мозга на месте"
 for f in chezmoi/dot_claude/CLAUDE.md chezmoi/dot_claude/settings.json.tmpl chezmoi/dot_claude/AGENTS.md.tmpl chezmoi/dot_claude/hooks/security-guard.sh chezmoi/dot_claude/rules/structure.md; do
   chk "$f" "[ -f '$HERE/$f' ]"

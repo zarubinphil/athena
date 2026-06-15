@@ -59,7 +59,7 @@ for dir in "$HERE/launchd" "$PRIV/launchd"; do
   done
 done
 # telegram .template: __POETRY_BIN__ + $HOME → plutil
-TG="$PRIV/launchd/com.zarubin.claudetelegrambot.plist.template"
+TG="$(ls "$PRIV"/launchd/*.claudetelegrambot.plist.template 2>/dev/null | head -1)"
 if [ -f "$TG" ]; then
   r="$MERGED/.lint-telegram.plist"
   sed -e "s#__POETRY_BIN__#$FAKE_HOME/venv/bin/bot#g" -e "s#\$HOME#$FAKE_HOME#g" "$TG" > "$r"

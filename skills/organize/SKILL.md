@@ -2,7 +2,7 @@
 name: organize
 description: Разложить новое по правильному месту в структуре Athena OS — новый проект, новое знание, файл, секрет, медиа. Триггеры: "куда положить", "создай проект", "разложи", "organize", "new project", "где это хранить". Источник раскладки — rules/structure.md.
 metadata:
-  owner: Philipp Zarubin
+  owner: <your-name>
   last-reviewed: 2026-06-15
 ---
 
