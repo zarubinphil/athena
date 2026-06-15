@@ -42,8 +42,10 @@ if [ -d "$PRIV/chezmoi" ]; then
   rsync -a --exclude '.git' "$PRIV/chezmoi/" "$MERGED/"
   # overlay приземлился? проверяем приватный маркер-файл
   [ -f "$MERGED/run_once_after_30-telegram-env.sh.tmpl" ] && grn "overlay наложен (run_once_ виден в merged)" || red "overlay НЕ наложен — run_once_ отсутствует в merged"
+elif [ "${ATHENA_EXPECT_OVERLAY:-0}" = 1 ]; then
+  red "приватный overlay ОЖИДАЛСЯ ($PRIV/chezmoi), но отсутствует — generic-only прогон НЕ полон (ATHENA_EXPECT_OVERLAY=1)"
 else
-  yel "приватный overlay не найден ($PRIV/chezmoi) — generic-only прогон"
+  grn "generic-only прогон (overlay не ожидается; для полной системы владельца выставь ATHENA_EXPECT_OVERLAY=1)"
 fi
 [ -f "$MERGED/.chezmoidata.yaml" ] || cp "$MERGED/.chezmoidata.yaml.example" "$MERGED/.chezmoidata.yaml" 2>/dev/null || true
 [ -f "$MERGED/.chezmoidata.yaml" ] && grn ".chezmoidata.yaml присутствует" || red "нет .chezmoidata.yaml (и .example)"

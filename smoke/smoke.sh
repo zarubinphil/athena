@@ -43,7 +43,9 @@ command -v shellcheck >/dev/null && chk "shellcheck bootstrap.sh" "shellcheck -S
 
 echo "[паритет] Claude и Codex видят одно (если развёрнуто)"
 if [ -d "$HOME/.claude" ] && [ -d "$HOME/.codex" ]; then
-  chk "~/.claude и ~/.codex есть" "true"
+  # Реальная сверка содержимого, не факт существования папок (KGB-23).
+  chk "~/.claude/AGENTS.md есть" "[ -e '$HOME/.claude/AGENTS.md' ]"
+  chk "~/.codex/AGENTS.md есть (паритет реестра)" "[ -e '$HOME/.codex/AGENTS.md' ]"
 else echo "  · дотфайлы ещё не развёрнуты (skip parity)"; fi
 
 echo "[рендер] dry-validate шаблонов (merged-source, эмуляция)"

@@ -6,7 +6,7 @@ set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOG="${TMPDIR:-/tmp}/athena-bootstrap-$(date +%Y%m%d-%H%M%S).log"
-DRY=0; ONLY=""
+DRY=0; ONLY=""; BOOT_ERRS=0   # агрегат сбоев (launchd и пр.) → ненулевой exit
 for a in "$@"; do
   case "$a" in
     --dry-run) DRY=1 ;;
@@ -157,15 +157,24 @@ layer5_runtime() {
 
   # launchd: generic (./launchd) + приватные (athena-private/launchd).
   # *.plist.example / *.plist.template не матчат *.plist → пропускаются (генерятся отдельно).
+  # Fail-closed: считаем loaded/errs, ok ТОЛЬКО при errs==0; bootout/bootstrap (не deprecated load).
+  local loaded=0 errs=0 uid; uid="$(id -u)"
   for dir in "$HERE/launchd" "$ATHENA_PRIVATE_DIR/launchd"; do
     [ -d "$dir" ] || continue
     for p in "$dir"/*.plist; do [ -e "$p" ] || continue
+      local label tgt; label="$(basename "$p" .plist)"
       tgt="$HOME/Library/LaunchAgents/$(basename "$p")"
       run "sed 's#\\\$HOME#$HOME#g' '$p' > '$tgt'"
-      run "launchctl unload '$tgt' 2>/dev/null; launchctl load '$tgt'"
+      if [ "$DRY" = 1 ]; then echo "  [dry] launchctl bootout/bootstrap gui/$uid $label" | tee -a "$LOG"; loaded=$((loaded+1)); continue; fi
+      launchctl bootout "gui/$uid/$label" >>"$LOG" 2>&1 || true   # выгрузка, если был
+      if launchctl bootstrap "gui/$uid" "$tgt" >>"$LOG" 2>&1; then
+        loaded=$((loaded+1))
+      else
+        errs=$((errs+1)); warn "launchd $label НЕ загрузился (см. $LOG)"
+      fi
     done
   done
-  ok "launchd-агенты загружены (generic + приватные)"
+  if [ "$errs" -eq 0 ]; then ok "launchd-агенты загружены: $loaded"; else warn "launchd: $loaded ок, $errs с ошибкой"; BOOT_ERRS=$((BOOT_ERRS+errs)); fi
 
   # telegram-бот: плист резолвит install-специфичный poetry-venv (хэш в имени venv).
   GEN="$ATHENA_PRIVATE_DIR/bin/gen-telegram-plist.sh"
@@ -184,4 +193,9 @@ layer6_smoke() {
 
 say "Athena OS bootstrap → лог $LOG  (DRY=$DRY ONLY='${ONLY:-все}')"
 layer0_base; layer_tools; layer1_brain; layer1b_plugins; layer2_registry; layer3_projects; layer4_vault; layer5_runtime; layer6_smoke
-say "Готово. Проверь лог: $LOG"
+if [ "$BOOT_ERRS" -eq 0 ]; then
+  say "Готово. Проверь лог: $LOG"
+else
+  warn "Готово с ошибками ($BOOT_ERRS) — НЕ всё поднялось. Лог: $LOG"
+  exit 1
+fi
