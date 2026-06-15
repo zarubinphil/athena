@@ -21,6 +21,9 @@ __pycache__/
 
 # Athena OS
 *.local
+# Личные манифесты — реальные живут в приватном overlay, не в generic-репо
+projects.manifest
+tools.manifest
 .secrets/
 secrets/
 *.env

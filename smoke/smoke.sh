@@ -39,5 +39,10 @@ if [ -d "$HOME/.claude" ] && [ -d "$HOME/.codex" ]; then
   chk "~/.claude и ~/.codex есть" "true"
 else echo "  · дотфайлы ещё не развёрнуты (skip parity)"; fi
 
+echo "[рендер] dry-validate шаблонов (merged-source, эмуляция)"
+if [ -x "$HERE/smoke/dry-validate.sh" ]; then
+  chk "dry-validate проходит" "'$HERE/smoke/dry-validate.sh' >/dev/null 2>&1"
+else echo "  · dry-validate.sh нет (skip)"; fi
+
 [ "$fail" = 0 ] && echo "SMOKE OK" || echo "SMOKE FAIL"
 exit "$fail"

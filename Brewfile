@@ -14,6 +14,7 @@ brew "coreutils"   # gtimeout, gdate — для хуков с таймаутам
 
 # Опционально (под проекты)
 brew "yt-dlp"      # Мнемозина: kb-yt-watch
+brew "poetry"      # claude-code-telegram бот (poetry-venv, Слой 0b)
 
 # Claude Code и Codex CLI ставятся своими установщиками — см. README.
 # (официальный install-script / Homebrew cask, когда доступен)

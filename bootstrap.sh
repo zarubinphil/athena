@@ -32,6 +32,13 @@ if [ -f "$CFG" ]; then . "$CFG"; else warn "нет athena.config.sh — скоп
 : "${ATHENA_VAULT_REPO:=}"         # git URL приватного vault-znaniya
 : "${ATHENA_PROJECTS_MANIFEST:=$HERE/projects.manifest}"
 MERGED="${ATHENA_MERGED_SOURCE:-$HOME/.local/share/athena-merged-source}"  # собранный generic⊕private source
+: "${ATHENA_TOOLS_MANIFEST:=$ATHENA_PRIVATE_DIR/tools.manifest}"   # внешние инструменты → ~/tools (Слой 0b)
+
+# Клон приватного overlay (idempotent) — нужен Слоям 0b/1/3/5.
+ensure_private() {
+  [ -n "$ATHENA_PRIVATE_REPO" ] && [ ! -d "$ATHENA_PRIVATE_DIR/.git" ] \
+    && run "git clone '$ATHENA_PRIVATE_REPO' '$ATHENA_PRIVATE_DIR'" || true
+}
 
 # ───────── Слой 0: база (Homebrew + CLI) ─────────
 layer0_base() {
@@ -42,6 +49,23 @@ layer0_base() {
   fi
   command -v brew >/dev/null && run "brew bundle --file '$HERE/Brewfile'" && ok "Brewfile применён"
   command -v claude >/dev/null && ok "claude CLI готов" || warn "claude CLI: установи Claude Code"
+}
+
+# ───────── Слой 0b: инструменты (~/tools — боты и т.п., ДО Мозга) ─────────
+# Клонится ДО Слоя 1: chezmoi run_once_ генерит .env бота при apply, если бот уже на месте.
+layer_tools() {
+  phase 0 || return 0; say "Слой 0b — инструменты (~/tools)"
+  ensure_private
+  [ -f "$ATHENA_TOOLS_MANIFEST" ] || { warn "нет tools.manifest — пропуск"; return 0; }
+  mkdir -p "$HOME/tools"
+  # формат строки: <git-url> <относительный путь под ~/tools> [install-команда]
+  while read -r url path cmd; do
+    [ -z "${url:-}" ] && continue; case "$url" in \#*) continue ;; esac
+    dest="$HOME/tools/$path"
+    [ -d "$dest/.git" ] || run "git clone '$url' '$dest'"
+    [ -n "${cmd:-}" ] && run "cd '$dest' && $cmd" || true
+    ok "инструмент $path"
+  done < "$ATHENA_TOOLS_MANIFEST"
 }
 
 # ───────── Слой 1: Мозг (дотфайлы через chezmoi merged-source) ─────────
@@ -57,10 +81,7 @@ layer1_brain() {
     ok "дотфайлы из внешнего source ($ATHENA_DOTFILES_REPO)"; return 0
   fi
 
-  # Клон приватного overlay, если задан репо и его ещё нет.
-  if [ -n "$ATHENA_PRIVATE_REPO" ] && [ ! -d "$ATHENA_PRIVATE_DIR/.git" ]; then
-    run "git clone '$ATHENA_PRIVATE_REPO' '$ATHENA_PRIVATE_DIR'"
-  fi
+  ensure_private   # клон overlay, если ещё нет (idempotent; обычно сделан Слоем 0b)
 
   # Сборка merged-source: generic база (--delete = чистый старт) ⊕ приватный overlay.
   run "mkdir -p '$MERGED'"
@@ -162,5 +183,5 @@ layer6_smoke() {
 }
 
 say "Athena OS bootstrap → лог $LOG  (DRY=$DRY ONLY='${ONLY:-все}')"
-layer0_base; layer1_brain; layer1b_plugins; layer2_registry; layer3_projects; layer4_vault; layer5_runtime; layer6_smoke
+layer0_base; layer_tools; layer1_brain; layer1b_plugins; layer2_registry; layer3_projects; layer4_vault; layer5_runtime; layer6_smoke
 say "Готово. Проверь лог: $LOG"

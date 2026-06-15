@@ -1,0 +1,8 @@
+# tools.manifest — внешние инструменты в ~/tools (Слой 0b bootstrap.sh, ДО Мозга).
+# Скопируй → tools.manifest (gitignored) ИЛИ держи в приватном overlay. Заполни своими.
+# Формат:  <git-url>  <путь-под-~/tools>  [install-команда]
+# Пустые строки и # — игнор.
+#
+# Клонится ДО Слоя 1 (chezmoi apply): тогда run_once_ генерит .env бота, если он на месте.
+# poetry-проектам нужен poetry (в Brewfile). Пример (claude-code-telegram бот):
+# https://github.com/RichardAtCT/claude-code-telegram.git    claudecode-telegram    poetry install

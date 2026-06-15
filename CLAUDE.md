@@ -3,7 +3,8 @@
 Athena OS — переносимая агентная ОС: разворот всей системы Филиппа на новом Mac одной командой. Этот репо — generic/public каркас (без личных данных).
 
 ## Карта
-- `bootstrap.sh` — оркестратор слоёв 0–6 (idempotent, `$HOME`, читает `athena.config.sh`). Слой 1 = merged-source: generic `chezmoi/` ⊕ приватный overlay (`ATHENA_PRIVATE_REPO`, Ф4) → один `chezmoi apply`.
+- `bootstrap.sh` — оркестратор слоёв 0–6 (+0b tools, idempotent, `$HOME`, читает `athena.config.sh`). Слой 1 = merged-source: generic `chezmoi/` ⊕ приватный overlay (`ATHENA_PRIVATE_REPO`, Ф4) → один `chezmoi apply`.
+- `projects.manifest` / `tools.manifest` (+`.example`) — клон проектов (`~/Проекты`) и инструментов (`~/tools`, Слой 0b ДО Мозга). Реальные — в приватном overlay.
 - `rules/structure.md` — **конституция раскладки** (источник истины организации ФС). Менять осознанно.
 - `chezmoi/` — шаблоны дотфайлов Мозга (улучшенный канон из best-practices vault).
 - `skills/{setup-os,bootstrap-project,organize}` — рождение ОС, каркас проекта, авто-раскладка.
