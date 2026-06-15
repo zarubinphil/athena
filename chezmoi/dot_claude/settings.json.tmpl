@@ -1,0 +1,45 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(/{{ .chezmoi.homeDir }}/.claude/secrets/**)",
+      "Read(/{{ .chezmoi.homeDir }}/.claude/server.env)",
+      "Read(/{{ .chezmoi.homeDir }}/.claude/session-env/**)",
+      "Read(/{{ .chezmoi.homeDir }}/.ssh/**)",
+      "Read(/{{ .chezmoi.homeDir }}/.secrets/**)",
+      "Read(/{{ .chezmoi.homeDir }}/.config/gh/**)",
+      "Read(/{{ .chezmoi.homeDir }}/.git-credentials)",
+      "Read(/{{ .chezmoi.homeDir }}/.claude/mcp.json)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/*secret*)",
+      "Read(**/*credential*)",
+      "Read(**/id_rsa*)",
+      "Read(**/*.pem)",
+      "Read(**/.scrapegraphai/**)",
+      "Read(**/references/secrets-map.md)",
+      "Edit(**/.env)",
+      "Write(**/.env)",
+      "Edit(**/*secret*)",
+      "Write(**/*secret*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"{{ .chezmoi.homeDir }}/.claude/hooks/security-guard.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "superpowers@superpowers-dev": true,
+    "ui-ux-pro-max@ui-ux-pro-max-skill": true,
+    "caveman@caveman": true
+  }
+}

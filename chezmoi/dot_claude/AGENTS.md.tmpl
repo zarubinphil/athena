@@ -1,0 +1,150 @@
+# Everything Claude Code (ECC) — Agent Instructions
+
+Version: 2.0.0-rc.1
+
+ECC provides agents, skills, commands, hooks, rules, MCP configs, and scripts for software development.
+
+## Shared Registry
+
+Before selecting, installing, or routing skills/workflows, read:
+
+`{{ .chezmoi.homeDir }}/.agents/SHARED-SKILLS-WORKFLOWS.md`
+
+Rules:
+- Register new skills, workflows, agents, commands, and related configs there.
+- Propagate additions to Claude and Codex when technically applicable.
+- Mirror local capability installs/updates to the Athena VPS (set `athena.vps_host` in chezmoi data) when technically applicable.
+- Never mirror secrets, auth files, `.env`, sessions, caches, or private runtime state.
+- Log meaningful usage in `{{ .chezmoi.homeDir }}/.agents/SKILL-USAGE-LEDGER.md`.
+- Track public GitHub repositories in `{{ .chezmoi.homeDir }}/.agents/GITHUB-STARS-LEDGER.md`.
+- Stricter project rules override shared defaults.
+
+## Communication
+
+- Use `caveman` skill for agent-to-user communication by default.
+- Keep responses terse, accurate, and low-filler.
+- Drop caveman only when clarity or safety requires full wording.
+
+## Instruction File Budget
+
+- Project `CLAUDE.md` and `AGENTS.md` files must stay at or below 200 lines.
+- If more detail is needed, move it to skills, subagents, docs, plans, or indexed knowledge files.
+- Skill/vendor manuals are exempt, but should not be copied into project instruction files.
+
+## Core Principles
+
+1. Agent-first: delegate domain tasks to specialists.
+2. Test-driven: write or update tests for meaningful code changes.
+3. Security-first: validate inputs, protect secrets, avoid unsafe defaults.
+4. Plan before execute: plan complex features before writing code.
+5. Preserve user work: do not revert unrelated changes.
+
+## Agent Routing
+
+Before reading full skill bodies or calling optional plugins/MCP, apply:
+`{{ .chezmoi.homeDir }}/.agents/registry/CAPABILITY-PLANNING.md`.
+Run graph-first preflight:
+`node {{ .chezmoi.homeDir }}/.agents/registry/scripts/capability-plan.mjs "<task>" --cwd "$PWD" --limit 10 --external-fallback --log`.
+Route quality-first: fit, registry score, proven usage, stars, and domain match before token cost. Cost is only a tie-breaker after quality is effectively equal.
+
+Local-first cascade: if the preflight reports `local_match: weak` or `none`, widen to the external ecosystem (`npx skills find`, read-only) → vet (SKILL.md + `uvx mcp-scan@latest --skills`) → install only with explicit approval, never `-y`/blind `-g`. On adopt, register + reindex so it becomes a local hit next time; log the outcome in `~/.claude/references/agents-routing-log.md`. Full protocol: CAPABILITY-PLANNING.md.
+
+Use proactively:
+- Complex features/refactors: `planner`.
+- New feature or bug fix: `tdd-guide`.
+- Code just written/modified: `code-reviewer`.
+- Architecture decisions: `architect`.
+- Security-sensitive code: `security-reviewer`.
+- Build/type failures: build resolver for stack.
+- E2E flows: `e2e-runner`.
+- Loop reliability/cost: `loop-operator`, `harness-optimizer`.
+
+Use parallel agents only for independent work. Do not assign two writing agents to same artifact.
+
+## Security
+
+Before commit or external action:
+- No hardcoded secrets.
+- User input validated.
+- SQL uses parameterized queries.
+- HTML output sanitized.
+- Auth/authz checked.
+- Rate limits present where needed.
+- Errors do not leak sensitive data.
+
+If critical security issue found: stop, review, fix, rotate exposed secrets, search for similar bugs.
+
+## Coding Style
+
+- Prefer small focused files.
+- Functions should stay small and readable.
+- Avoid deep nesting.
+- Handle errors explicitly.
+- Use clear names.
+- Prefer immutable updates where practical.
+- Follow existing project conventions first.
+
+## Testing
+
+Target 80%+ coverage where the project has coverage discipline.
+
+Workflow:
+1. Red: write/update failing test.
+2. Green: minimal implementation.
+3. Refactor: improve while tests pass.
+
+For existing projects, follow their test commands and conventions.
+
+## Development Workflow
+
+1. Explore: read project rules and relevant files.
+2. Plan: identify files, risks, checks.
+3. Implement: scoped edits only.
+4. Review: use reviewer for risky changes.
+5. Verify: run tests/lint/build when available.
+6. Summarize: changed files, checks, residual risk.
+
+Knowledge capture:
+- Temporary/private notes: memory.
+- Durable project decisions: existing docs.
+- No obvious doc location: ask before creating top-level file.
+
+## Workflow Surface
+
+- `skills/` is canonical workflow surface.
+- `commands/` is legacy slash-entry compatibility.
+- New reusable procedures should become skills first.
+
+## Git
+
+- Commit format: `<type>: <description>`.
+- Review diff before push.
+- Push, merge, PR, deploy, publish require explicit approval.
+
+## Context
+
+- Keep main context lean.
+- Use skills for repeated procedures.
+- Use subagents for large read/research/review tasks.
+- Use indexes before raw knowledge-base scans.
+- Avoid last 20% of context window for large refactors.
+
+## Project Structure
+
+```text
+agents/       specialized subagents
+skills/       workflow skills and domain knowledge
+commands/     slash command compatibility
+hooks/        trigger-based automations
+rules/        always-follow guidelines
+scripts/      utility scripts
+mcp-configs/  MCP server configs
+tests/        test suite
+```
+
+## Success
+
+- User requirement met.
+- Tests/checks pass or gaps named.
+- No known critical security issue.
+- Code readable and maintainable.

@@ -53,6 +53,21 @@ layer1_brain() {
   ok "~/.claude · ~/.codex · ~/.agents разложены (chezmoi)"
 }
 
+# ───────── Слой 1b: плагины (reinstall из marketplaces) ─────────
+layer1b_plugins() {
+  phase 1 || return 0; say "Слой 1b — плагины"
+  command -v claude >/dev/null || { warn "claude CLI нет — плагины пропущены"; return 0; }
+  MAN="$HERE/plugins.manifest"
+  [ -f "$MAN" ] || { warn "нет plugins.manifest — пропуск"; return 0; }
+  while read -r kind arg _; do
+    [ -z "${kind:-}" ] && continue; case "$kind" in \#*) continue ;; esac
+    case "$kind" in
+      marketplace) run "claude plugin marketplace add '$arg' || true"; ok "marketplace $arg" ;;
+      plugin)      run "claude plugin install '$arg' || true";        ok "plugin $arg" ;;
+    esac
+  done < "$MAN"
+}
+
 # ───────── Слой 2: реестр SSOT ─────────
 layer2_registry() {
   phase 2 || return 0; say "Слой 2 — реестр способностей"
@@ -106,5 +121,5 @@ layer6_smoke() {
 }
 
 say "Athena OS bootstrap → лог $LOG  (DRY=$DRY ONLY='${ONLY:-все}')"
-layer0_base; layer1_brain; layer2_registry; layer3_projects; layer4_vault; layer5_runtime; layer6_smoke
+layer0_base; layer1_brain; layer1b_plugins; layer2_registry; layer3_projects; layer4_vault; layer5_runtime; layer6_smoke
 say "Готово. Проверь лог: $LOG"

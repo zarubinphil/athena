@@ -1,0 +1,22 @@
+# Athena OS chezmoi-source (generic). Эти target-пути chezmoi НЕ трогает —
+# рантайм/личное живёт вне канона (rules/structure.md §1: _runtime, не в канон).
+# Личный слой (значения, личные хуки) приезжает отдельным приватным source — Фаза 4.
+.DS_Store
+
+# рантайм-мусор Мозга (если уже есть в ~/.claude — не перетираем, не удаляем)
+.claude/history.jsonl
+.claude/session-env/**
+.claude/sessions/**
+.claude/telemetry/**
+.claude/projects/**
+.claude/file-history/**
+.claude/handoff/**
+.claude/cache/**
+.claude/plugins/cache/**
+.claude/plugins/marketplaces/**
+
+# секреты — НИКОГДА под chezmoi (Keychain / ~/.secrets)
+.claude/secrets/**
+.claude/server.env
+.claude/mcp.json
+.secrets/**

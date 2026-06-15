@@ -1,0 +1,18 @@
+# Athena OS — манифест плагинов (bootstrap Слой 1b: reinstall из marketplaces).
+# Формат (одна директива на строку, # = коммент, пустые игнор):
+#   marketplace <source>          → claude plugin marketplace add <source>   (owner/repo | URL | path)
+#   plugin      <name@marketplace> → claude plugin install <name@marketplace>
+# Идемпотентно: add/install повторно = no-op. enabledPlugins в settings.json
+# объявляет какие активны; этот манифест регистрирует ОТКУДА их брать.
+
+marketplace JuliusBrussee/caveman
+marketplace anthropics/claude-plugins-official
+
+# superpowers / ui-ux-pro-max ставились на dev-машине локальным клоном
+# (Desktop/Skill). Укажи upstream-репо и раскомментируй (ПРОВЕРЬ имена!):
+# marketplace obra/superpowers
+# marketplace OWNER/ui-ux-pro-max-skill
+
+plugin caveman@caveman
+# plugin superpowers@superpowers-dev
+# plugin ui-ux-pro-max@ui-ux-pro-max-skill

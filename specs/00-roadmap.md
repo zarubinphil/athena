@@ -12,12 +12,19 @@ Generic-репо под открытый GitHub, clean-room (боевой `~/.cl
 - [x] `skills/organize/SKILL.md` (новый), копии `setup-os` + `bootstrap-project`
 - [x] `smoke/smoke.sh` — зелёный
 - [x] git init + commit (48 файлов)
-- [ ] `launchd/*.plist` шаблоны → переносится в Фазу 2 (с курированием chezmoi)
+- [x] `launchd/*.plist` шаблоны → сделано в Фазе 2 (health + session-reaper.example)
 **DoD:** ✓ репо самодостаточно, `./bootstrap.sh --dry-run` проходит, 0 личных данных. (shellcheck — в Brewfile, ставится на bootstrap.)
 
-## Фаза 2 — курирование канона Мозга (chezmoi-source)
-Заново собрать лин-канон `~/.claude` по best-practices vault (CLAUDE.md ≤80–120, hot/cold, 4 слоя, deny-безопасность), НЕ дамп текущего 1.2 ГБ. Скиллы: reinstall плагинов из marketplaces + личные в chezmoi.
-**DoD:** chezmoi apply на sandbox-юзере даёт рабочий лин `~/.claude`.
+## Фаза 2 — курирование канона Мозга (chezmoi-source) ✓
+Generic chezmoi-source собран (чистая пересборка, НЕ дамп 1.2 ГБ):
+- [x] `dot_claude`: `CLAUDE.md` (лин-роутер) · `AGENTS.md.tmpl` (VPS-IP вычищен, пути templated) · `settings.json.tmpl` (deny-щит 20 паттернов) · `hooks/security-guard.sh` (детерминированный, behavior-tested) · `rules/` (structure + ECC 21 язык) · 30 generic ECC-агентов · `scripts/health-check.sh`
+- [x] `dot_codex`: symlink-паритет → claude-канон
+- [x] `dot_agents`: registry SSOT (13 скриптов HOME-генерик + REGISTRY/CAPABILITY-PLANNING/SHARED docs)
+- [x] плагины: `plugins.manifest` + bootstrap Слой 1b (marketplace add + install)
+- [x] launchd: `health.plist`+скрипт (PATH-фикс 127); `session-reaper.plist.example` (скрипт → Ф4)
+- [x] smoke++ (secret-токен guard + канон) ЗЕЛЁНЫЙ; шаблоны render-validated (homeDir → валидный JSON)
+- [x] 0 hard личных данных в source; soft (Мнемозина/owner в structure.md + setup-os шаблонах) → publication-sanitize Ф5
+**DoD:** source render-validated + smoke зелёный. Живой `chezmoi apply` — ТОЛЬКО на чистом таргете (на боевом юзере перетёр бы рабочий `~/.claude` — clean-room), переносится в Ф5 e2e.
 
 ## Фаза 3 — аккуратный рефактор реальной структуры
 По карте связей (хэндофф `~/.claude/handoff/athena-os.md`). Бэкап → правки в локстеп: vault-константы в `kb-pipeline.js`, проекты в `~/Проекты`, единый интейк, `~/.secrets`, починка флагов (`mnemosyne-health` PATH). Каждый шаг → smoke.

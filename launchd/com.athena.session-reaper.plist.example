@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Athena OS — session-reaper ШАБЛОН (.example = Слой 5 НЕ грузит автоматом).
+     Жнец зависших claude-сессий (Wait ≥2ч → хэндофф → kill; сессии в ожидании
+     сброса лимита НЕ трогать). Логика reaper'а — личная инфра (Фаза 4):
+     положи $HOME/.claude/scripts/session-reaper.sh и переименуй файл в .plist. -->
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.athena.session-reaper</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>$HOME/.claude/scripts/session-reaper.sh</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key><string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+  </dict>
+  <key>StartInterval</key><integer>1800</integer>
+  <key>StandardOutPath</key><string>$HOME/.claude/session-reaper.log</string>
+  <key>StandardErrorPath</key><string>$HOME/.claude/session-reaper.log</string>
+</dict>
+</plist>
