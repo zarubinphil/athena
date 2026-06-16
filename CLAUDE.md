@@ -15,7 +15,7 @@ Athena — переносимая агентная ОС: разворот все
 ## Команды
 - Линт: `shellcheck bootstrap.sh smoke/*.sh`
 - Сухой прогон: `./bootstrap.sh --dry-run`
-- Slice: `./bootstrap.sh --only=<0..6>`
+- Slice: `./bootstrap.sh --only=<0|0b|1..6>` (`0`=база, `0b`=инструменты ~/tools — раздельно)
 - Smoke: `smoke/smoke.sh`
 - Dry-validate шаблонов (без chezmoi): `smoke/dry-validate.sh` (merge → рендер → plist/json/bash-n + лов неизвестных `{{ }}`)
 

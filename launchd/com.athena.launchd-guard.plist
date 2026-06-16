@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <!-- Athena — ежедневный launchd status=127 guard. $HOME подставляется Слоем 5 bootstrap (sed).
-     Сам guard зависит только от системных бинарей (PlistBuddy/plutil по абс. пути) — PATH базовый. -->
+     Сам guard зависит от системных бинарей (PlistBuddy/plutil по абс. пути), но включает
+     $HOME/.local/bin для само-консистентности (guard сверяет PATH всех агентов, в т.ч. свой). -->
 <plist version="1.0">
 <dict>
   <key>Label</key><string>com.athena.launchd-guard</string>
@@ -12,7 +13,7 @@
   </array>
   <key>EnvironmentVariables</key>
   <dict>
-    <key>PATH</key><string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+    <key>PATH</key><string>$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
   </dict>
   <key>StartCalendarInterval</key>
   <dict><key>Hour</key><integer>9</integer><key>Minute</key><integer>30</integer></dict>

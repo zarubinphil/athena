@@ -11,6 +11,7 @@ brew "jq"
 brew "ripgrep"
 brew "fd"
 brew "coreutils"   # gtimeout, gdate — для хуков с таймаутами
+brew "shellcheck"  # линт bootstrap.sh + smoke/*.sh (команда из CLAUDE.md)
 
 # Опционально (под проекты)
 brew "yt-dlp"      # Мнемозина: kb-yt-watch

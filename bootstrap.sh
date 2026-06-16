@@ -54,7 +54,7 @@ layer0_base() {
 # ───────── Слой 0b: инструменты (~/tools — боты и т.п., ДО Сознания) ─────────
 # Клонится ДО Слоя 1: chezmoi run_once_ генерит .env бота при apply, если бот уже на месте.
 layer_tools() {
-  phase 0 || return 0; say "Слой 0b — инструменты (~/tools)"
+  phase 0b || return 0; say "Слой 0b — инструменты (~/tools)"
   ensure_private
   [ -f "$ATHENA_TOOLS_MANIFEST" ] || { warn "нет tools.manifest — пропуск"; return 0; }
   mkdir -p "$HOME/tools"
