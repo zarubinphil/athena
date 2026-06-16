@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Athena — event-driven пересбор реестра. WatchPaths: установка скилла / запись overrides.jsonl
+     → registry-rebuild.sh (index+registry+views+graphify+validate) → routable «сразу же».
+     $HOME подставляется Слоем 5 bootstrap (sed). PATH явный (graphify в Python.framework,
+     node/python3) — иначе launchd не найдёт (баг status=127). ThrottleInterval+скрипт-lock+settle
+     коалесцируют всплеск файлов при установке. RunAtLoad=false — только на изменение. -->
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.athena.registry-watch</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>$HOME/.agents/registry/scripts/registry-rebuild.sh</string>
+  </array>
+  <key>WatchPaths</key>
+  <array>
+    <string>$HOME/.agents/skills</string>
+    <string>$HOME/.codex/skills</string>
+    <string>$HOME/.claude/plugins/marketplaces</string>
+    <string>$HOME/.agents/registry/overrides.jsonl</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key><string>$HOME/.local/bin:/Library/Frameworks/Python.framework/Versions/3.11/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+  </dict>
+  <key>RunAtLoad</key><false/>
+  <key>ThrottleInterval</key><integer>30</integer>
+  <key>StandardOutPath</key><string>$HOME/.claude/capabilities/registry-rebuild.log</string>
+  <key>StandardErrorPath</key><string>$HOME/.claude/capabilities/registry-rebuild.log</string>
+</dict>
+</plist>
