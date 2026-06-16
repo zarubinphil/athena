@@ -89,6 +89,15 @@ layer1_brain() {
   if [ -d "$ATHENA_PRIVATE_DIR/chezmoi" ]; then
     run "rsync -a --exclude '.git' '$ATHENA_PRIVATE_DIR/chezmoi/' '$MERGED/'"
     ok "приватный overlay наложен ($ATHENA_PRIVATE_DIR)"
+    # Дедуп target-конфликтов: реальный файл из overlay затеняет generic-symlink того же
+    # target (иначе chezmoi: duplicate target). Напр. overlay dot_codex/AGENTS.md побеждает
+    # generic dot_codex/symlink_AGENTS.md.tmpl.
+    if [ "$DRY" != 1 ]; then
+      while IFS= read -r -d '' sl; do
+        d="$(dirname "$sl")"; b="$(basename "$sl")"; t="${b#symlink_}"; t="${t%.tmpl}"
+        if [ -e "$d/$t" ] || [ -e "$d/$t.tmpl" ]; then rm -f "$sl"; fi
+      done < <(find "$MERGED" -name 'symlink_*' -print0)
+    fi
   else
     warn "приватный overlay не найден ($ATHENA_PRIVATE_DIR/chezmoi) — generic-only"
   fi

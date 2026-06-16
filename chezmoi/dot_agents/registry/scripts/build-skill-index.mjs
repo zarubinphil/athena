@@ -8,6 +8,13 @@ const roots = [
   path.join(HOME, ".codex/skills"),
   path.join(HOME, ".codex/plugins/cache"),
 ];
+// Опциональные доп-корни сканирования из приватного слоя (напр. клиентские/доменные проекты).
+// Generic-канон сканит стандартные пути; личные корни — внешним JSON (массив путей: абсолютных
+// или относительных от $HOME), НЕ в публичном коде.
+try {
+  const extraTxt = await fs.readFile(path.join(HOME, ".agents/registry/scan-roots.json"), "utf8");
+  for (const p of JSON.parse(extraTxt)) roots.push(path.isAbsolute(p) ? p : path.join(HOME, p));
+} catch { /* overlay опционален */ }
 const codexConfigPath = path.join(HOME, ".codex/config.toml");
 const claudeMcpPath = path.join(HOME, ".claude/mcp.json");
 const outDir = path.join(HOME, ".agents/registry");

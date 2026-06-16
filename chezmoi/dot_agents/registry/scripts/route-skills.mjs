@@ -86,72 +86,82 @@ const qTerms = [...new Set(terms(query))];
 
 const overlays = [
   {
-    when: /(front.?end|ui|ux|dashboard|responsive|layout|landing|component|accessibility|a11y|wcag)/iu,
+    when: /(front.?end|ui|ux|dashboard|responsive|layout|landing|component|accessibility|a11y|wcag|визуал|интерфейс|лендинг|адаптив)/iu,
     ids: ["frontend-builder", "frontend-design", "frontend-designer", "accessibility", "frontend-design-audit", "impeccable", "playwright", "browser"],
     domains: ["web", "design"],
     boost: 180,
   },
   {
-    when: /(graphify|graph|knowledge graph|obsidian|vault|knowledge base)/iu,
+    when: /(graphify|graph|knowledge graph|граф|графиф|obsidian|vault|knowledge base|база знаний)/iu,
     ids: ["capability-system-graph", "graphify", "gsd-graphify", "obsidian-vault", "knowledge-ops"],
     domains: ["agentops", "docs", "research"],
     boost: 180,
   },
   {
-    when: /(capabilit|skill|plugin|mcp|router|routing|planning|preflight|selection|select)/iu,
+    when: /(capabilit|skill|plugin|mcp|router|routing|planning|preflight|selection|select|выбор|подбор|скилл|плагин|планирован|маршрут)/iu,
     ids: ["capability-planning-gate", "cheap-skill-router", "capability-system-graph", "graphify", "context7", "exa", "github", "memory", "agentmemory"],
     domains: ["agentops", "planning", "graph"],
     boost: 190,
   },
   {
-    when: /(skill.?optimizer|skill.?miner|mine.*skill|skill candidate|candidate.*skill|repeated workflow|recurring workflow|session history|scan sessions|weekly skill|skill.?personalizer|personaliz.*skill|audit.*skill|skill audit|trigger.*skill|skill.?generalizer|generaliz.*skill|publish.*skill)/iu,
+    when: /(skill.?optimizer|skill.?miner|mine.*skill|skill candidate|candidate.*skill|repeated workflow|recurring workflow|session history|scan sessions|weekly skill|skill.?personalizer|personaliz.*skill|audit.*skill|skill audit|trigger.*skill|skill.?generalizer|generaliz.*skill|publish.*skill|скилл.?оптим|кандидат.*скилл|скилл.*кандидат|повторя.*воркфлоу|повторя.*workflow|аудит.*скилл|персонализ.*скилл)/iu,
     ids: ["skill-miner", "skill-personalizer", "skill-generalizer"],
     domains: ["skills"],
     boost: 360,
   },
   {
-    when: /(research|compare|sources|reddit|hacker news|github|deep)/iu,
+    when: /(research|compare|sources|reddit|hacker news|github|deep|исслед|сравн|источник)/iu,
     ids: ["deep-research", "firecrawl-deep-research", "firecrawl-search", "browse", "exa", "firecrawl-mcp", "scrapegraph-mcp", "github"],
     domains: ["research", "osint", "docs"],
     boost: 120,
   },
   {
-    when: /(brief|terse|short|caveman)/iu,
+    when: /(brief|terse|short|caveman|коротко|кратко|сжато)/iu,
     ids: ["caveman"],
     domains: ["comms"],
     boost: 160,
   },
   {
-    when: /(dcf|valuation|intrinsic value|wacc|lbo|3-statement|financial model|sensitivity)/iu,
+    when: /(dcf|valuation|intrinsic value|wacc|lbo|3-statement|financial model|sensitivity|оценк|финансов.*модел|дисконт)/iu,
     ids: ["dcf-model", "3-statement-model", "lbo-model", "merger-model", "returns-analysis"],
     domains: ["finance"],
     boost: 180,
   },
   {
-    when: /(debug|bug|failing|error|broken|diagnos|fix|test|tdd|regression|trace)/iu,
+    when: /(debug|bug|failing|error|broken|diagnos|fix|test|tdd|regression|trace|падает|ошибка|сломал|тест)/iu,
     ids: ["systematic-debugging", "diagnose", "tdd", "test-driven-development", "receiving-code-review", "verification-before-completion", "playwright", "codegraph", "github"],
     domains: ["devops", "testing"],
     boost: 170,
   },
   {
-    when: /(docs|documentation|api|sdk|library|framework|version|release)/iu,
-    ids: ["context7", "firecrawl-search", "exa"],
+    when: /(docs|documentation|api|sdk|library|framework|version|release|next.js|react|supabase|документац|библиотек|фреймворк)/iu,
+    ids: ["context7", "openai-docs", "docs-lookup", "firecrawl-search", "exa"],
     domains: ["docs", "code"],
     boost: 150,
   },
   {
-    when: /(spreadsheet|excel|xls|google sheets|table|csv)/iu,
+    when: /(spreadsheet|excel|xls|google sheets|table|csv|таблиц|эксель|финанс)/iu,
     ids: ["spreadsheets", "audit-xls", "clean-data-xls", "dcf-model", "3-statement-model"],
     domains: ["data", "finance"],
     boost: 150,
   },
   {
-    when: /(slides|presentation|deck|powerpoint|ppt)/iu,
-    ids: ["presentations", "client-report"],
+    when: /(slides|presentation|deck|powerpoint|ppt|презентац|слайды)/iu,
+    ids: ["presentations", "ckm:slides", "client-report"],
     domains: ["slides", "docs"],
     boost: 150,
   },
 ];
+
+// Опциональный личный/проектный routing-overlay. Generic-канон публичен; доменные правила
+// (напр. юрпрактика, клиентские проекты) живут в приватном слое — внешним JSON-файлом, НЕ в коде.
+// Формат: [{ "when": "regex-строка", "flags": "iu", "ids": [...], "pathIncludes": [...], "domains": [...], "boost": 180 }]
+try {
+  const overlayTxt = await fs.readFile(`${HOME}/.agents/registry/route-overlay.json`, "utf8");
+  for (const rule of JSON.parse(overlayTxt)) {
+    overlays.push({ ...rule, when: new RegExp(rule.when, rule.flags || "iu") });
+  }
+} catch { /* overlay опционален — отсутствие/ошибка чтения не критичны */ }
 
 function overlayBoost(record) {
   let boost = 0;
