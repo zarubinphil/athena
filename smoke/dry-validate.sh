@@ -9,7 +9,7 @@
 # Истинный рендер на живой dest → Фаза 5 (e2e на чистом таргете, где chezmoi стоит).
 set -uo pipefail
 
-HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"            # корень athena-os
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"            # корень athena
 PRIV="${ATHENA_PRIVATE_DIR:-$HOME/Проекты/athena-private}"
 FAKE_HOME="$(mktemp -d)"; MERGED="$(mktemp -d)"
 trap 'rm -rf "$FAKE_HOME" "$MERGED"' EXIT

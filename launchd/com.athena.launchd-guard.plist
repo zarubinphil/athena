@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<!-- Athena OS — ежедневный launchd status=127 guard. $HOME подставляется Слоем 5 bootstrap (sed).
+<!-- Athena — ежедневный launchd status=127 guard. $HOME подставляется Слоем 5 bootstrap (sed).
      Сам guard зависит только от системных бинарей (PlistBuddy/plutil по абс. пути) — PATH базовый. -->
 <plist version="1.0">
 <dict>

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Athena OS — детерминированный security-guard (PreToolUse: Write|Edit|MultiEdit).
+# Athena — детерминированный security-guard (PreToolUse: Write|Edit|MultiEdit).
 # Инвариант "куда НЕЛЬЗЯ писать" (rules/structure.md §8). Дополняет settings.json
 # permissions.deny: deny ловит чтение, этот хук — запись + secret-shaped имена.
 # Контракт хука: stdin = JSON {tool_name, tool_input{file_path,...}}.

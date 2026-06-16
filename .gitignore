@@ -19,7 +19,7 @@ __pycache__/
 # Карта секретов (если положена в проект)
 **/references/secrets-map.md
 
-# Athena OS
+# Athena
 *.local
 # Личные манифесты — реальные живут в приватном overlay, не в generic-репо
 projects.manifest

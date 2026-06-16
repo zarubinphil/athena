@@ -1,4 +1,4 @@
-# Athena OS — системные зависимости.  Применить: brew bundle --file Brewfile
+# Athena — системные зависимости.  Применить: brew bundle --file Brewfile
 # CLI-инструменты
 brew "git"
 brew "gh"

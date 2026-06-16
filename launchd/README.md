@@ -1,4 +1,4 @@
-# launchd — агенты автоматики Athena OS
+# launchd — агенты автоматики Athena
 
 Слой 5 `bootstrap.sh` берёт каждый `*.plist` здесь, подставляет `$HOME` (sed) →
 `~/Library/LaunchAgents/`, `launchctl load`. Файлы `*.plist.example` **пропускаются**.

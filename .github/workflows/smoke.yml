@@ -1,0 +1,27 @@
+name: smoke
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    # macOS: dry-validate использует plutil/launchd-семантику (macOS-only)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: shellcheck (lint)
+        run: |
+          brew install shellcheck
+          shellcheck -S error bootstrap.sh smoke/*.sh
+
+      - name: smoke (структура · чистота · личное · канон · self-learning · dry-validate)
+        run: bash smoke/smoke.sh
+
+      - name: clean-room dry-validate (generic-only → GREEN, 0 неизвестных токенов)
+        run: |
+          export ATHENA_PRIVATE_DIR="$(mktemp -d)"   # нет overlay = чистый таргет
+          bash smoke/dry-validate.sh

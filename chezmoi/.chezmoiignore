@@ -1,4 +1,4 @@
-# Athena OS chezmoi-source (generic). Эти target-пути chezmoi НЕ трогает —
+# Athena chezmoi-source (generic). Эти target-пути chezmoi НЕ трогает —
 # рантайм/личное живёт вне канона (rules/structure.md §1: _runtime, не в канон).
 # Личный слой (значения, личные хуки) приезжает отдельным приватным source — Фаза 4.
 .DS_Store

@@ -1,4 +1,4 @@
-# Athena OS — chezmoi data (generic дефолты).
+# Athena — chezmoi data (generic дефолты).
 # Копировать → .chezmoidata.yaml (gitignored), заполнить под машину.
 # Личные значения (vps_host и т.п.) — приватный слой Фазы 4, НЕ в публичный source.
 

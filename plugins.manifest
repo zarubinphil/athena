@@ -1,4 +1,4 @@
-# Athena OS — манифест плагинов (bootstrap Слой 1b: reinstall из marketplaces).
+# Athena — манифест плагинов (bootstrap Слой 1b: reinstall из marketplaces).
 # Формат (одна директива на строку, # = коммент, пустые игнор):
 #   marketplace <source>          → claude plugin marketplace add <source>   (owner/repo | URL | path)
 #   plugin      <name@marketplace> → claude plugin install <name@marketplace>

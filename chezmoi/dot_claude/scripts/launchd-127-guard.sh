@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Athena OS — launchd status=127 guard.
+# Athena — launchd status=127 guard.
 # Назначение: каждый user LaunchAgent, что зовёт бинарь ГОЛОЙ командой, реально находит его
 #   под PATH, который даст launchd. Ловит рекуррентный баг exit 127 (бинарь не на PATH).
 # Два режима:

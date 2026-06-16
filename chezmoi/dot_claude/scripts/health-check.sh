@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Athena OS — health-check (launchd, daily). Целостность Мозга: бинари + канон-файлы.
+# Athena — health-check (launchd, daily). Целостность Мозга: бинари + канон-файлы.
 # Лог: ~/.claude/health.log. Не чинит — только сигналит. Generic, без личных данных.
 set -uo pipefail
 LOG="$HOME/.claude/health.log"

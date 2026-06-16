@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Личная конфигурация Athena OS. Скопируй → athena.config.sh (gitignored) и заполни.
+# Личная конфигурация Athena. Скопируй → athena.config.sh (gitignored) и заполни.
 # Никаких СЕКРЕТОВ здесь — только URL'ы репо и пути. Значения ключей — в Keychain.
 
 # ПРОДВИНУТОЕ: готовый внешний chezmoi-source целиком (минует merge generic⊕private).
@@ -15,7 +15,7 @@ export ATHENA_PRIVATE_DIR="$HOME/Проекты/athena-private"
 export ATHENA_VAULT_REPO=""
 
 # Манифест проектов. Если в ATHENA_PRIVATE_DIR есть projects.manifest — он перекроет этот.
-export ATHENA_PROJECTS_MANIFEST="$HOME/Проекты/athena-os/projects.manifest"
+export ATHENA_PROJECTS_MANIFEST="$HOME/Проекты/athena/projects.manifest"
 
 # Внешние инструменты → ~/tools (Слой 0b, напр. telegram-бот). По умолчанию берётся
 # tools.manifest из приватного overlay (ATHENA_PRIVATE_DIR).

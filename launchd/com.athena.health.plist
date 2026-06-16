@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<!-- Athena OS — daily health-check. $HOME подставляется Слоем 5 bootstrap (sed).
+<!-- Athena — daily health-check. $HOME подставляется Слоем 5 bootstrap (sed).
      EnvironmentVariables.PATH задан явно (вкл. $HOME/.local/bin — туда ставится claude) —
      иначе launchd не находит claude/chezmoi (баг status=127). -->
 <plist version="1.0">

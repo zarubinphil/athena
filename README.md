@@ -1,9 +1,9 @@
-# Athena OS
+# Athena
 
 Переносимая агентная ОС. Чистый Mac → **одна команда** → вся система: от каскада `CLAUDE.md` до боевого рантайма.
 
 ```bash
-git clone <repo> ~/Проекты/athena-os && cd ~/Проекты/athena-os
+git clone <repo> ~/Проекты/athena && cd ~/Проекты/athena
 cp athena.config.example.sh athena.config.sh   # заполни свои репо/значения
 ./bootstrap.sh                                   # или --dry-run
 ```

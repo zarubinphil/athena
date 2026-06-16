@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Athena OS — оркестратор полного разворота на чистом Mac.
+# Athena — оркестратор полного разворота на чистом Mac.
 # Один прогон: база → Мозг(дотфайлы) → реестр → проекты → знания → секреты+MCP+launchd → smoke.
 # Идемпотентно. Личные значения — в athena.config.sh (gitignored, из athena.config.example.sh).
 set -euo pipefail
@@ -191,7 +191,7 @@ layer6_smoke() {
   [ -x "$HERE/smoke/smoke.sh" ] && run "'$HERE/smoke/smoke.sh'" && ok "smoke зелёный" || warn "нет smoke.sh"
 }
 
-say "Athena OS bootstrap → лог $LOG  (DRY=$DRY ONLY='${ONLY:-все}')"
+say "Athena bootstrap → лог $LOG  (DRY=$DRY ONLY='${ONLY:-все}')"
 layer0_base; layer_tools; layer1_brain; layer1b_plugins; layer2_registry; layer3_projects; layer4_vault; layer5_runtime; layer6_smoke
 if [ "$BOOT_ERRS" -eq 0 ]; then
   say "Готово. Проверь лог: $LOG"
