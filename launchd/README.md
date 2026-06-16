@@ -5,10 +5,10 @@
 
 | Файл | Что | Статус |
 |---|---|---|
-| `com.athena.health.plist` | daily health-check Мозга (бинари+канон) → `~/.claude/health.log` | активен, generic |
+| `com.athena.health.plist` | daily health-check Сознания (бинари+канон) → `~/.claude/health.log` | активен, generic |
 | `com.athena.session-reaper.plist.example` | жнец зависших сессий (1800s) | шаблон opt-in — **скрипт уже generic** |
 
-Жнец готов к работе: `chezmoi/dot_claude/scripts/session-reaper.sh` едет с Мозгом
+Жнец готов к работе: `chezmoi/dot_claude/scripts/session-reaper.sh` едет с Сознанием
 (generic, чистый `$HOME`, 0 секрета). Public-юзер активирует переименованием
 `com.athena.session-reaper.plist.example` → `.plist`. У владельца активный плист с
 лейблом `com.fil.session-reaper` живёт в приватном слое (athena-private/launchd/).

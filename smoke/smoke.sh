@@ -28,7 +28,7 @@ echo "[личное] нет имён/usernames/приватных идентиф
 PERSONAL_RE='(Philipp|Zarubin|Филипп|zarubinphil|Кирилов|Ломоносов|Менделеев|Калачов|com\.zarubin)'
 chk "нет личных данных в публичных tracked-файлах" "! grep -rIniE --exclude-dir=.git --exclude-dir=audit-2026-06-16 --exclude='smoke.sh' --exclude='*.log' \"\$PERSONAL_RE\" '$HERE' >/dev/null 2>&1"
 
-echo "[канон] chezmoi-source Мозга на месте"
+echo "[канон] chezmoi-source Сознания на месте"
 for f in chezmoi/dot_claude/CLAUDE.md chezmoi/dot_claude/settings.json.tmpl chezmoi/dot_claude/AGENTS.md.tmpl chezmoi/dot_claude/hooks/security-guard.sh chezmoi/dot_claude/rules/structure.md; do
   chk "$f" "[ -f '$HERE/$f' ]"
 done

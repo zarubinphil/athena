@@ -4,9 +4,9 @@ Athena — переносимая агентная ОС: разворот все
 
 ## Карта
 - `bootstrap.sh` — оркестратор слоёв 0–6 (+0b tools, idempotent, `$HOME`, читает `athena.config.sh`). Слой 1 = merged-source: generic `chezmoi/` ⊕ приватный overlay (`ATHENA_PRIVATE_REPO`, Ф4) → один `chezmoi apply`.
-- `projects.manifest` / `tools.manifest` (+`.example`) — клон проектов (`~/Проекты`) и инструментов (`~/tools`, Слой 0b ДО Мозга). Реальные — в приватном overlay.
+- `projects.manifest` / `tools.manifest` (+`.example`) — клон проектов (`~/Проекты`) и инструментов (`~/tools`, Слой 0b ДО Сознания). Реальные — в приватном overlay.
 - `rules/structure.md` — **конституция раскладки** (источник истины организации ФС). Менять осознанно.
-- `chezmoi/` — шаблоны дотфайлов Мозга (улучшенный канон из best-practices vault).
+- `chezmoi/` — шаблоны дотфайлов Сознания (улучшенный канон из best-practices vault).
 - `skills/{setup-os,bootstrap-project,organize}` — рождение ОС, каркас проекта, авто-раскладка.
 - `claude-starter/` — эталон проекта, который Athena ставит конечному юзеру.
 - `projects.manifest` (+`.example`) · `secrets-checklist.md` · `mcp-reauth.md` · `launchd/` · `smoke/`.

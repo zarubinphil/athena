@@ -28,7 +28,7 @@ E Автоматизация→ ingest-hook, weekly health-check cron, parity Cl
 ## Этап 0 — Разведка (молча, до вопросов)
 ```bash
 ls -la ~/.claude/ 2>/dev/null; ls ~/.claude/CLAUDE.md 2>/dev/null
-ls "$HOME"/* knlow* "$HOME/Полезные знания" 2>/dev/null   # vault?
+ls "$HOME"/* knlow* "$HOME/Мозг" 2>/dev/null   # vault?
 which gh claude gsd 2>/dev/null
 ```
 Реши: чистая установка или дооформление. Не перезаписывай существующее без бэкапа (`cp X X.bak`).
@@ -55,7 +55,7 @@ AskUserQuestion: «С чего начинаем?» → [Полный setup с н
 ---
 
 ## Этап B — База знаний по Карпаты (LLM-wiki в Obsidian)
-Спроси: путь к vault (дефолт `~/Полезные знания` или `~/Knowledge`). Существует Obsidian vault — подключаем, нет — создаём.
+Спроси: путь к vault (дефолт `~/Мозг` или `~/Knowledge`). Существует Obsidian vault — подключаем, нет — создаём.
 
 Структура (метод Карпаты, синтез-на-записи, без vector DB):
 ```

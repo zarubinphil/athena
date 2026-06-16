@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Athena — оркестратор полного разворота на чистом Mac.
-# Один прогон: база → Мозг(дотфайлы) → реестр → проекты → знания → секреты+MCP+launchd → smoke.
+# Один прогон: база → Сознание(дотфайлы) → реестр → проекты → знания → секреты+MCP+launchd → smoke.
 # Идемпотентно. Личные значения — в athena.config.sh (gitignored, из athena.config.example.sh).
 set -euo pipefail
 
@@ -51,7 +51,7 @@ layer0_base() {
   command -v claude >/dev/null && ok "claude CLI готов" || warn "claude CLI: установи Claude Code"
 }
 
-# ───────── Слой 0b: инструменты (~/tools — боты и т.п., ДО Мозга) ─────────
+# ───────── Слой 0b: инструменты (~/tools — боты и т.п., ДО Сознания) ─────────
 # Клонится ДО Слоя 1: chezmoi run_once_ генерит .env бота при apply, если бот уже на месте.
 layer_tools() {
   phase 0 || return 0; say "Слой 0b — инструменты (~/tools)"
@@ -68,11 +68,11 @@ layer_tools() {
   done < "$ATHENA_TOOLS_MANIFEST"
 }
 
-# ───────── Слой 1: Мозг (дотфайлы через chezmoi merged-source) ─────────
+# ───────── Слой 1: Сознание (дотфайлы через chezmoi merged-source) ─────────
 # Источник = generic-канон (./chezmoi) ⊕ приватный overlay (athena-private/chezmoi).
 # Overlay побеждает на конфликте; добавляет личное (references, launchd-скрипты, run_once_).
 layer1_brain() {
-  phase 1 || return 0; say "Слой 1 — Мозг (дотфайлы, merged-source)"
+  phase 1 || return 0; say "Слой 1 — Сознание (дотфайлы, merged-source)"
   command -v chezmoi >/dev/null || run "brew install chezmoi"
 
   # Продвинутый escape-hatch: готовый внешний source целиком, без merge.
@@ -142,7 +142,7 @@ layer3_projects() {
 # ───────── Слой 4: знания (vault) ─────────
 layer4_vault() {
   phase 4 || return 0; say "Слой 4 — vault Знаний"
-  V="$HOME/Полезные знания"
+  V="$HOME/Мозг"
   if [ -n "$ATHENA_VAULT_REPO" ] && [ ! -d "$V/.git" ]; then run "git clone '$ATHENA_VAULT_REPO' '$V'"; ok "vault склонирован"
   else warn "vault: задай ATHENA_VAULT_REPO или перенеси вручную"; fi
 }

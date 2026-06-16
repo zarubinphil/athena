@@ -11,7 +11,7 @@ export ATHENA_DOTFILES_REPO=""
 export ATHENA_PRIVATE_REPO=""
 export ATHENA_PRIVATE_DIR="$HOME/Проекты/athena-private"
 
-# Приватный репо vault Знаний (контент ~/Полезные знания).
+# Приватный репо vault Знаний (контент ~/Мозг).
 export ATHENA_VAULT_REPO=""
 
 # Манифест проектов. Если в ATHENA_PRIVATE_DIR есть projects.manifest — он перекроет этот.
