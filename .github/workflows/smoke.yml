@@ -18,7 +18,10 @@ jobs:
           brew install shellcheck
           shellcheck -S error bootstrap.sh smoke/*.sh
 
-      - name: smoke (структура · чистота · личное · канон · self-learning · dry-validate)
+      - name: bootstrap --dry-run (оркестратор слоёв 0–6, без побочных эффектов)
+        run: ./bootstrap.sh --dry-run
+
+      - name: smoke (структура · чистота · личное · канон · self-learning · security-guard · dry-validate)
         run: bash smoke/smoke.sh
 
       - name: clean-room dry-validate (generic-only → GREEN, 0 неизвестных токенов)

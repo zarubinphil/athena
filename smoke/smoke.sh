@@ -40,6 +40,18 @@ chk "ретро-шаблон" "[ -f '$HERE/chezmoi/dot_claude/self-learning/sess
 chk "security-guard синтаксис" "bash -n '$HERE/chezmoi/dot_claude/hooks/security-guard.sh'"
 chk "health-check синтаксис" "bash -n '$HERE/chezmoi/dot_claude/scripts/health-check.sh'"
 
+echo "[security-guard] поведение (functional, не только синтаксис)"
+GUARD="$HERE/chezmoi/dot_claude/hooks/security-guard.sh"
+# mock-JSON на stdin → сверяем exit (2=блок, 0=пропуск)
+ge() { printf '{"tool_input":{"file_path":"%s"}}' "$1" | bash "$GUARD" >/dev/null 2>&1; echo $?; }
+chk ".env → блок (exit 2)"                  '[ "$(ge /proj/.env)" = 2 ]'
+chk ".env.example → пропуск (exit 0)"       '[ "$(ge /proj/.env.example)" = 0 ]'
+chk "~/.secrets/* → блок"                   '[ "$(ge /Users/u/.secrets/db)" = 2 ]'
+chk "secret-shaped имя (db.key) → блок"     '[ "$(ge /proj/db.key)" = 2 ]'
+chk "id_ed25519 → блок"                     '[ "$(ge /Users/u/.ssh/id_ed25519)" = 2 ]'
+chk "обычный .md → пропуск"                 '[ "$(ge /proj/readme.md)" = 0 ]'
+chk "кириллический путь .env → блок (unicode-safe)" '[ "$(ge /Пользователь/проект/.env)" = 2 ]'
+
 echo "[скрипты] валидны"
 chk "bootstrap.sh синтаксис" "bash -n '$HERE/bootstrap.sh'"
 chk "bootstrap.sh исполняем" "[ -x '$HERE/bootstrap.sh' ]"
