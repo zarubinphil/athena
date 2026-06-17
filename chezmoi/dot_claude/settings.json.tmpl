@@ -46,6 +46,19 @@
           }
         ]
       }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"{{ .chezmoi.homeDir }}/.claude/scripts/session-token-log.sh\"",
+            "async": true,
+            "timeout": 20,
+            "statusMessage": "Token-spend → self-learning..."
+          }
+        ]
+      }
     ]
   },
   "enabledPlugins": {
