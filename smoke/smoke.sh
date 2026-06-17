@@ -55,6 +55,12 @@ chk "onboarding-detect синтаксис" "bash -n '$DETECT'"
 chk "SessionStart зарегистрирован в settings.tmpl" "grep -q 'SessionStart' '$HERE/chezmoi/dot_claude/settings.json.tmpl'"
 chk "settings.tmpl ссылается на onboarding-detect" "grep -q 'onboarding-detect.sh' '$HERE/chezmoi/dot_claude/settings.json.tmpl'"
 
+echo "[токен-учёт] паритет канона (скрипты + SessionEnd-wiring)"
+chk "session-token-log.sh в каноне" "[ -f '$HERE/chezmoi/dot_claude/scripts/executable_session-token-log.sh' ]"
+chk "token-spend.sh в каноне" "[ -f '$HERE/chezmoi/dot_claude/scripts/executable_token-spend.sh' ]"
+chk "SessionEnd зарегистрирован в settings.tmpl" "grep -q 'SessionEnd' '$HERE/chezmoi/dot_claude/settings.json.tmpl'"
+chk "settings.tmpl проводит session-token-log на SessionEnd" "grep -q 'session-token-log.sh' '$HERE/chezmoi/dot_claude/settings.json.tmpl'"
+
 echo "[onboarding-detect] поведение (functional, fake-HOME)"
 OD_TMP="$(mktemp -d)"
 od() { HOME="$1" bash "$DETECT" 2>/dev/null; }   # stdout: nudge-JSON или пусто
