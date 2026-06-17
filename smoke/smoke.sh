@@ -97,6 +97,19 @@ chk "bootstrap.sh синтаксис" "bash -n '$HERE/bootstrap.sh'"
 chk "bootstrap.sh исполняем" "[ -x '$HERE/bootstrap.sh' ]"
 command -v shellcheck >/dev/null && chk "shellcheck bootstrap.sh" "shellcheck -S error '$HERE/bootstrap.sh'" || echo "  · shellcheck не установлен (skip)"
 
+echo "[launchd] plist валидны + PATH-консистентность"
+if command -v plutil >/dev/null; then
+  for p in "$HERE"/launchd/*.plist "$HERE"/launchd/*.plist.example; do
+    [ -e "$p" ] || continue; b="$(basename "$p")"
+    t="$(mktemp)"; sed "s#\$HOME#$HOME#g" "$p" > "$t"
+    chk "plist валиден: $b" "plutil -lint '$t' >/dev/null 2>&1"; rm -f "$t"
+    # Агенты с EnvironmentVariables.PATH обязаны включать $HOME/.local/bin (claude/node там; KGB-29).
+    if grep -q '<key>PATH</key>' "$p"; then
+      chk "PATH содержит \$HOME/.local/bin: $b" "grep -A1 '<key>PATH</key>' '$p' | grep -q '\$HOME/.local/bin'"
+    fi
+  done
+else echo "  · plutil нет (skip — не macOS)"; fi
+
 echo "[паритет] Claude и Codex видят одно (если развёрнуто)"
 if [ -d "$HOME/.claude" ] && [ -d "$HOME/.codex" ]; then
   # Реальная сверка содержимого, не факт существования папок (KGB-23).
