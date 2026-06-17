@@ -35,6 +35,17 @@
           }
         ]
       }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"{{ .chezmoi.homeDir }}/.claude/hooks/onboarding-detect.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
     ]
   },
   "enabledPlugins": {
