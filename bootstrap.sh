@@ -113,7 +113,8 @@ layer1_brain() {
   # (риск: sed зацепил бы легитимный homeDir-литерал в AGENTS.md, который chezmoi рендерит
   # из `{{ .chezmoi.homeDir }}` ПО ДИЗАЙНУ). На чистой машине это no-op (live == чистый шаблон).
   if [ "$DRY" != 1 ]; then
-    for rf in "$HOME/.agents/SHARED-SKILLS-WORKFLOWS.md"; do
+    local rfiles=("$HOME/.agents/SHARED-SKILLS-WORKFLOWS.md")
+    for rf in "${rfiles[@]}"; do
       [ -f "$rf" ] && sed -i '' "s#$HOME/#~/#g" "$rf"
     done
     ok "абс.пути live-реестра нормализованы → ~ (анти-дрейф)"
