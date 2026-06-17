@@ -47,21 +47,11 @@ The payoff is simple: a correct system, stood up from zero in minutes, that keep
   <img src="docs/assets/journey.png" alt="One command turns an empty Mac into a complete system" width="92%">
 </p>
 
-You start with an empty Mac and type one command. Athena does the rest, step by step:
+You start with an empty Mac and type one command. Athena does the rest, step by step — every step automatic, ordered, and checked. If anything fails to start, the run stops and tells you; you never end up with a half-built machine that pretends it's fine.
 
-```mermaid
-flowchart LR
-  A["🖥️ Empty Mac"] --> B["one command<br/>./bootstrap.sh"]
-  B --> C["installs the tools"]
-  C --> D["lays down the rules<br/>& habits"]
-  D --> E["clones your projects"]
-  E --> F["restores your knowledge"]
-  F --> G["starts background helpers"]
-  G --> H["✅ checks everything<br/>actually works"]
-  H --> I["🚀 A working system"]
-```
-
-Every step is automatic, ordered, and checked. If anything fails to start, the run stops and tells you — you never end up with a half-built machine that pretends it's fine.
+<p align="center">
+  <img src="docs/assets/journey-diagram.png" alt="Step-by-step: empty Mac to working system" width="100%">
+</p>
 
 ---
 
@@ -73,20 +63,9 @@ Every step is automatic, ordered, and checked. If anything fails to start, the r
 
 Everything you own lives in exactly one of three "planes." Keeping them apart is what stops the mess: temporary clutter never pollutes your rules, secrets never touch your code, and notes never get lost inside project folders.
 
-```mermaid
-flowchart TB
-  subgraph P1["🧠 Consciousness — how your assistant thinks"]
-    C["rules · habits · helpers · a map of every tool it can use"]
-  end
-  subgraph P2["📚 Knowledge — what you know"]
-    K["a personal library of distilled notes (the Karpathy method)"]
-  end
-  subgraph P3["⚙️ Work — what you do"]
-    W["your projects · documents · media"]
-  end
-  P1 -.guides.-> P3
-  P2 -.feeds.-> P1
-```
+<p align="center">
+  <img src="docs/assets/planes-diagram.png" alt="Consciousness, Knowledge and Work — the three planes" width="100%">
+</p>
 
 | Plane | In plain terms | Where it lives |
 |---|---|---|
@@ -106,16 +85,9 @@ The rules for *what goes where* live inside the system itself, so it grows tidil
 
 The setup script builds your machine from the ground up in ordered layers — like assembling floors of a building. Each layer is safe to repeat, and you can run just one if you want.
 
-```mermaid
-flowchart LR
-  L0["0 · Base<br/>core tools"] --> L0b["0b · Tools<br/>extras"]
-  L0b --> L1["1 · Consciousness<br/>rules & habits"]
-  L1 --> L2["2 · Registry<br/>the tool map"]
-  L2 --> L3["3 · Work<br/>projects"]
-  L3 --> L4["4 · Knowledge<br/>your library"]
-  L4 --> L5["5 · Runtime<br/>secrets & helpers"]
-  L5 --> L6["6 · Smoke<br/>final checks"]
-```
+<p align="center">
+  <img src="docs/assets/layers-diagram.png" alt="The layers, from Base to Checks" width="100%">
+</p>
 
 | Layer | What it sets up |
 |---|---|
@@ -126,7 +98,7 @@ flowchart LR
 | **3 · Work** | clones and installs your projects |
 | **4 · Knowledge** | restores your personal library |
 | **5 · Runtime** | secrets (kept in the macOS Keychain) and background helpers |
-| **6 · Smoke** | runs final checks to prove the whole thing actually works |
+| **6 · Checks** | runs final checks to prove the whole thing actually works |
 
 ```bash
 ./bootstrap.sh --only=1     # run a single layer
@@ -143,12 +115,9 @@ flowchart LR
 
 Here's the tricky part of sharing a personal setup: the *structure* is worth opening up, but the *contents* — your secrets, your private notes — are not. Athena solves it by blending two sources at setup time: a **public** skeleton (this repo) and your own **private** layer. They merge into one, and your private layer always wins.
 
-```mermaid
-flowchart LR
-  G["🌍 Public skeleton<br/>this repo · safe to share"] --> M{{"blend"}}
-  P["🔒 Your private layer<br/>secrets & personal config"] --> M
-  M --> A["✨ Your real machine"]
-```
+<p align="center">
+  <img src="docs/assets/merge-diagram.png" alt="Public skeleton plus private layer blend into your machine" width="100%">
+</p>
 
 - Skip the private layer → you still get a complete, working **public-only** setup.
 - Add it → your personal details are layered in on top.
@@ -166,17 +135,9 @@ This repository is the **public skeleton**. It contains zero personal data — n
 
 Every time an AI assistant has to rediscover its own tools, re-read scattered instructions, or wander around looking for the right skill, it burns tokens — and tokens are money and time. Athena gives the assistant a **tidy index of everything it can do**, so it walks straight to the right tool instead of searching.
 
-```mermaid
-flowchart LR
-  subgraph Without["😵 Without a map"]
-    direction TB
-    Q1["task"] --> S1["search…"] --> S2["re-read…"] --> S3["guess…"] --> R1["maybe right"]
-  end
-  subgraph With["🦉 With Athena's registry"]
-    direction TB
-    Q2["task"] --> IDX["look it up in the index"] --> R2["right tool, first try"]
-  end
-```
+<p align="center">
+  <img src="docs/assets/token-diagram.png" alt="Without a map: wandering. With Athena: a direct path." width="100%">
+</p>
 
 Less wandering means fewer tokens spent on overhead and more spent on your actual problem. The structure does the remembering, so the assistant doesn't have to.
 
