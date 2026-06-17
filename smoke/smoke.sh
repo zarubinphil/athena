@@ -34,6 +34,9 @@ for f in chezmoi/dot_claude/CLAUDE.md chezmoi/dot_claude/settings.json.tmpl chez
   chk "$f" "[ -f '$HERE/$f' ]"
 done
 chk "settings.json deny-щит присутствует" "grep -q '\"deny\"' '$HERE/chezmoi/dot_claude/settings.json.tmpl'"
+# CIA-3: source реестра пишет tilde, НЕ hardcode /Users/ (иначе портативность мертва;
+# bootstrap нормализует live-дрейф, но source обязан стартовать чистым).
+chk "SHARED-SKILLS source без hardcode /Users/" "! grep -q '/Users/' '$HERE/chezmoi/dot_agents/SHARED-SKILLS-WORKFLOWS.md'"
 echo "[самообучение] переносимая self-learning подсистема в каноне"
 chk "skill self-learning" "[ -f '$HERE/chezmoi/dot_claude/skills/self-learning/SKILL.md' ]"
 chk "create_-логи (создаются раз, не затираются)" "ls '$HERE'/chezmoi/dot_claude/self-learning/create_*.md >/dev/null 2>&1"

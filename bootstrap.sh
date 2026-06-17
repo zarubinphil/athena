@@ -106,6 +106,20 @@ layer1_brain() {
 
   run "chezmoi init --apply --source '$MERGED'"
   ok "~/.claude · ~/.codex · ~/.agents разложены (merged-source)"
+
+  # CIA-3: нормализация абс.путей в live-реестре. Source пишет `~/.agents/...` (tilde),
+  # но агенты со временем вписывают `$HOME/.agents/...` (реверт-мутация) — шаблон это не
+  # лечит, апплай чистый только в момент apply. Чиним каждый прогон. Scope СТРОГО реестр-доки
+  # (риск: sed зацепил бы легитимный homeDir-литерал в AGENTS.md, который chezmoi рендерит
+  # из `{{ .chezmoi.homeDir }}` ПО ДИЗАЙНУ). На чистой машине это no-op (live == чистый шаблон).
+  if [ "$DRY" != 1 ]; then
+    for rf in "$HOME/.agents/SHARED-SKILLS-WORKFLOWS.md"; do
+      [ -f "$rf" ] && sed -i '' "s#$HOME/#~/#g" "$rf"
+    done
+    ok "абс.пути live-реестра нормализованы → ~ (анти-дрейф)"
+  else
+    echo "  [dry] нормализация абс.путей реестра → ~" | tee -a "$LOG"
+  fi
 }
 
 # ───────── Слой 1b: плагины (reinstall из marketplaces) ─────────

@@ -17,13 +17,13 @@ Generic-репо под открытый GitHub, clean-room (боевой `~/.cl
 
 ## Фаза 2 — курирование канона Сознания (chezmoi-source) ✓
 Generic chezmoi-source собран (чистая пересборка, НЕ дамп 1.2 ГБ):
-- [x] `dot_claude`: `CLAUDE.md` (лин-роутер) · `AGENTS.md.tmpl` (VPS-IP вычищен, пути templated) · `settings.json.tmpl` (deny-щит 20 паттернов) · `hooks/security-guard.sh` (детерминированный, behavior-tested) · `rules/` (structure + ECC 21 язык) · 30 generic ECC-агентов · `scripts/health-check.sh`
+- [x] `dot_claude`: `CLAUDE.md` (лин-роутер) · `AGENTS.md.tmpl` (VPS-IP вычищен, пути templated) · `settings.json.tmpl` (deny-щит 20 паттернов) · `hooks/security-guard.sh` (детерминированный, behavior-tested) · `rules/` (structure + ECC 20 наборов: common/web/zh + 17 языков) · 30 generic ECC-агентов · `scripts/health-check.sh`
 - [x] `dot_codex`: symlink-паритет → claude-канон
 - [x] `dot_agents`: registry SSOT (13 скриптов HOME-генерик + REGISTRY/CAPABILITY-PLANNING/SHARED docs)
 - [x] плагины: `plugins.manifest` + bootstrap Слой 1b (marketplace add + install)
 - [x] launchd: `health.plist`+скрипт (PATH-фикс 127); `session-reaper.plist.example` (скрипт → Ф4)
 - [x] smoke++ (secret-токен guard + канон) ЗЕЛЁНЫЙ; шаблоны render-validated (homeDir → валидный JSON)
-- [x] 0 hard личных данных в source; soft (Мнемозина/owner в structure.md + setup-os шаблонах) → publication-sanitize Ф5
+- [x] 0 hard личных данных в source; soft: «Мнемозина» (богиня памяти) / «Mnemazine» (имя проекта) — РЕШЕНО оба канон, НЕ санитайзятся (KGB-19 accepted с14); «owner» в шаблонах — generic-плейсхолдер
 **DoD:** source render-validated + smoke зелёный. Живой `chezmoi apply` — ТОЛЬКО на чистом таргете (на боевом юзере перетёр бы рабочий `~/.claude` — clean-room), переносится в Ф5 e2e.
 
 ## Фаза 3 — аккуратный рефактор реальной структуры (частично, 2026-06-15)
