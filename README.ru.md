@@ -166,7 +166,7 @@ smoke/smoke.sh                       # паритет + структура
 smoke/dry-validate.sh                # валидация рендера шаблонов (без chezmoi)
 ```
 
-Читай [`specs/`](specs/) первым (фазовый план), [`docs/decisions/`](docs/decisions/) для архитектурных решений, и проектный [`CLAUDE.md`](CLAUDE.md) как карту.
+**Глубже:** [`docs/FEATURES.ru.md`](docs/FEATURES.ru.md) описывает каждую функцию детально. Читай [`specs/`](specs/) (фазовый план), [`docs/decisions/`](docs/decisions/) для архитектурных решений, и проектный [`CLAUDE.md`](CLAUDE.md) как карту.
 
 ---
 

@@ -1,6 +1,10 @@
 # Athena — Feature Reference (EN)
 
-> Russian version: [FEATURES.ru.md](FEATURES.ru.md)
+> Russian version: [FEATURES.ru.md](FEATURES.ru.md) · Back to [README](../README.md)
+
+<p align="center">
+  <img src="assets/six-layers.png" alt="Athena layered deployment" width="85%">
+</p>
 
 Athena is a portable agentic OS: one command stands up an entire personal agent
 environment on a fresh Mac. This document describes every function in detail.

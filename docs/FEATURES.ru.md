@@ -1,6 +1,10 @@
 # Athena — справочник функций (RU)
 
-> English version: [FEATURES.en.md](FEATURES.en.md)
+> English version: [FEATURES.en.md](FEATURES.en.md) · Назад к [README](../README.ru.md)
+
+<p align="center">
+  <img src="assets/six-layers.png" alt="Слоистый разворот Athena" width="85%">
+</p>
 
 Athena — переносимая агентная ОС: одна команда поднимает всё личное агентное окружение
 на чистом Mac. Документ подробно описывает каждую функцию.

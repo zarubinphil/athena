@@ -166,7 +166,7 @@ smoke/smoke.sh                       # parity + structure smoke
 smoke/dry-validate.sh                # template render validation (no chezmoi)
 ```
 
-Read [`specs/`](specs/) first for the phased plan, [`docs/decisions/`](docs/decisions/) for architecture decisions, and the project [`CLAUDE.md`](CLAUDE.md) for the map.
+**Go deeper:** [`docs/FEATURES.en.md`](docs/FEATURES.en.md) documents every function in detail. Read [`specs/`](specs/) for the phased plan, [`docs/decisions/`](docs/decisions/) for architecture decisions, and the project [`CLAUDE.md`](CLAUDE.md) for the map.
 
 ---
 
