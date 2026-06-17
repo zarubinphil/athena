@@ -17,6 +17,7 @@
     <key>PATH</key><string>$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
   </dict>
   <key>StartInterval</key><integer>1800</integer>
+  <key>ThrottleInterval</key><integer>120</integer>
   <key>StandardOutPath</key><string>$HOME/.claude/session-reaper.log</string>
   <key>StandardErrorPath</key><string>$HOME/.claude/session-reaper.err.log</string>
 </dict>

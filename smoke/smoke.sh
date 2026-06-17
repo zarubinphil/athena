@@ -43,6 +43,8 @@ chk "create_-логи (создаются раз, не затираются)" "l
 chk "ретро-шаблон" "[ -f '$HERE/chezmoi/dot_claude/self-learning/session-review-template.md' ]"
 chk "security-guard синтаксис" "bash -n '$HERE/chezmoi/dot_claude/hooks/security-guard.sh'"
 chk "health-check синтаксис" "bash -n '$HERE/chezmoi/dot_claude/scripts/health-check.sh'"
+chk "launchd-127-guard синтаксис" "bash -n '$HERE/chezmoi/dot_claude/scripts/launchd-127-guard.sh'"
+chk "session-reaper синтаксис" "bash -n '$HERE/chezmoi/dot_claude/scripts/executable_session-reaper.sh'"
 
 echo "[onboarding-grill] assets грилла первого запуска на месте"
 SOS="$HERE/skills/setup-os"
@@ -109,6 +111,10 @@ if command -v plutil >/dev/null; then
     fi
   done
 else echo "  · plutil нет (skip — не macOS)"; fi
+
+echo "[манифесты] синтаксис директив"
+# plugins.manifest: каждая значимая строка = marketplace|plugin (Слой 1b парсит по 1-му полю; KGB-22).
+chk "plugins.manifest без битых директив" "! grep -vE '^[[:space:]]*(#|\$|marketplace |plugin )' '$HERE/plugins.manifest'"
 
 echo "[паритет] Claude и Codex видят одно (если развёрнуто)"
 if [ -d "$HOME/.claude" ] && [ -d "$HOME/.codex" ]; then

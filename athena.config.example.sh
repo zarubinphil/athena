@@ -20,3 +20,7 @@ export ATHENA_PROJECTS_MANIFEST="$HOME/Проекты/athena/projects.manifest"
 # Внешние инструменты → ~/tools (Слой 0b, напр. telegram-бот). По умолчанию берётся
 # tools.manifest из приватного overlay (ATHENA_PRIVATE_DIR).
 export ATHENA_TOOLS_MANIFEST="$ATHENA_PRIVATE_DIR/tools.manifest"
+
+# ПРОДВИНУТОЕ: куда собирается merged-source (generic ⊕ private) перед chezmoi apply.
+# По умолчанию $HOME/.local/share/athena-merged-source. Менять незачем без причины.
+export ATHENA_MERGED_SOURCE="$HOME/.local/share/athena-merged-source"

@@ -186,10 +186,15 @@ layer5_runtime() {
   for dir in "$HERE/launchd" "$ATHENA_PRIVATE_DIR/launchd"; do
     [ -d "$dir" ] || continue
     for p in "$dir"/*.plist; do [ -e "$p" ] || continue
-      local label tgt; label="$(basename "$p" .plist)"
+      local label tgt rendered; label="$(basename "$p" .plist)"
       tgt="$HOME/Library/LaunchAgents/$(basename "$p")"
-      run "sed 's#\\\$HOME#$HOME#g' '$p' > '$tgt'"
+      rendered="$(sed "s#\$HOME#$HOME#g" "$p")"
       if [ "$DRY" = 1 ]; then echo "  [dry] launchctl bootout/bootstrap gui/$uid $label" | tee -a "$LOG"; loaded=$((loaded+1)); continue; fi
+      # Idempotent (KGB-40): plist без изменений + агент уже загружен → не дёргать (анти-мигание).
+      if [ -f "$tgt" ] && [ "$rendered" = "$(cat "$tgt")" ] && launchctl print "gui/$uid/$label" >/dev/null 2>&1; then
+        loaded=$((loaded+1)); continue
+      fi
+      printf '%s\n' "$rendered" > "$tgt"
       launchctl bootout "gui/$uid/$label" >>"$LOG" 2>&1 || true   # выгрузка, если был
       if launchctl bootstrap "gui/$uid" "$tgt" >>"$LOG" 2>&1; then
         loaded=$((loaded+1))
