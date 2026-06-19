@@ -5,16 +5,16 @@ Athena — переносимая агентная ОС: разворот все
 ## Карта
 - `preinstall.sh` — Шаг 0 руками в Терминале (brew+CLI+claude, нужен пароль Mac; `curl|bash`). Единственное вне Claude. Дальше: `claude` → `/setup-os` (дирижёр установки + опрос интеграций попапами).
 - `bootstrap.sh` — оркестратор слоёв 0–6 (+0b tools, idempotent, `$HOME`, читает `athena.config.sh`). Слой 1 = merged-source: generic `chezmoi/` ⊕ приватный overlay (`ATHENA_PRIVATE_REPO`, Ф4) → один `chezmoi apply`.
-- `projects.manifest` / `tools.manifest` (+`.example`) — клон проектов (`~/Проекты`) и инструментов (`~/tools`, Слой 0b ДО Сознания). Реальные — в приватном overlay.
+- `projects.manifest.example` / `tools.manifest.example` (шаблоны) + `plugins.manifest` (дженерик, трекается) — клон проектов (`~/Проекты`) и инструментов (`~/tools`, Слой 0b ДО Сознания) + плагины Сознания. Реальные `projects.manifest`/`tools.manifest` — gitignored, приходят из приватного overlay.
 - `rules/structure.md` — **конституция раскладки** (источник истины организации ФС). Менять осознанно.
 - `chezmoi/` — шаблоны дотфайлов Сознания (улучшенный канон из best-practices vault).
 - `skills/{setup-os,bootstrap-project,organize,athena-update}` — рождение ОС, каркас проекта, авто-раскладка, безопасное обновление живой системы (анализ→план→согласование→действие, бэкап+откат, `.athena-version`-стамп).
 - `claude-starter/` — эталон проекта, который Athena ставит конечному юзеру.
-- `projects.manifest` (+`.example`) · `secrets-checklist.md` · `mcp-reauth.md` · `launchd/` · `smoke/`.
+- `secrets-checklist.md` · `mcp-reauth.md` · `launchd/` · `smoke/` · `Brewfile` · `athena.config.example.sh`.
 - `specs/` — фазовый план (читать первым). `docs/decisions/` — ADR.
 
 ## Команды
-- Линт: `shellcheck bootstrap.sh smoke/*.sh`
+- Линт: `shellcheck preinstall.sh bootstrap.sh smoke/*.sh` (0 warning = гейт)
 - Сухой прогон: `./bootstrap.sh --dry-run`
 - Slice: `./bootstrap.sh --only=<0|0b|1..6>` (`0`=база, `0b`=инструменты ~/tools — раздельно)
 - Smoke: `smoke/smoke.sh`
