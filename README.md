@@ -15,13 +15,27 @@
 
 ---
 
+**Two steps and you're done.**
+
+**Step 1** — paste this into Terminal. It'll ask for your Mac password once; that's fine.
+
 ```bash
-git clone <repo> ~/Проекты/athena && cd ~/Проекты/athena
-cp athena.config.example.sh athena.config.sh   # fill in your repos / values
-./bootstrap.sh                                   # or --dry-run to preview
+curl -fsSL https://raw.githubusercontent.com/zarubinphil/athena/main/preinstall.sh | bash
 ```
 
-That's the whole setup. No long checklist, nothing to forget, no two machines that mysteriously behave differently.
+That brings in Homebrew, a few CLIs, and Claude Code. It's the only part you do by hand — Homebrew wants a password, and an agent can't type one.
+
+**Step 2** — grab the repo, open Claude, and just answer what it asks.
+
+```bash
+git clone https://github.com/zarubinphil/athena ~/athena && cd ~/athena
+claude
+# then type:  /setup-os
+```
+
+From here `/setup-os` builds the system layer by layer and pops up a question whenever there's a choice — GitHub? Firecrawl? a knowledge vault? Say no to anything you don't want; you can add it any time later.
+
+> Already know your way around? `cp athena.config.example.sh athena.config.sh`, then `./bootstrap.sh` runs the engine straight, no Claude needed (`--dry-run` to look first).
 
 ---
 

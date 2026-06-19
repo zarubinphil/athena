@@ -26,8 +26,9 @@ echo "[личное] нет имён/usernames/приватных идентиф
 # Только git-TRACKED файлы (= что реально пушится). gitignored личное (athena.config.sh,
 # *.log) и untracked (audit-2026-06-16/) в публичный каркас не попадают — git grep их не видит.
 # Исключения-pathspec: smoke.sh (сам содержит паттерн).
-PERSONAL_RE='(Philipp|Zarubin|Филипп|zarubinphil|Кирилов|Ломоносов|Менделеев|Калачов|com\.zarubin)'
-chk "нет личных данных в публичных tracked-файлах" "! git -C '$HERE' grep -IniE -e \"\$PERSONAL_RE\" -- ':!smoke/smoke.sh' ':!docs/audit-2026-06-16/**' >/dev/null 2>&1"
+# PCRE: Zarubin(?!phil) банит фамилию, но НЕ публичный GitHub-хэндл zarubinphil (clone/curl URL — публичен, не PII).
+PERSONAL_RE='(Philipp|Zarubin(?!phil)|Филипп|Кирилов|Ломоносов|Менделеев|Калачов|com\.zarubin)'
+chk "нет личных данных в публичных tracked-файлах" "! git -C '$HERE' grep -IPni -e \"\$PERSONAL_RE\" -- ':!smoke/smoke.sh' ':!docs/audit-2026-06-16/**' >/dev/null 2>&1"
 
 echo "[канон] chezmoi-source Сознания на месте"
 for f in chezmoi/dot_claude/CLAUDE.md chezmoi/dot_claude/settings.json.tmpl chezmoi/dot_claude/AGENTS.md.tmpl chezmoi/dot_claude/hooks/security-guard.sh chezmoi/dot_claude/rules/structure.md; do
