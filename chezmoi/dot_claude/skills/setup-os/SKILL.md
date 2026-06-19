@@ -14,14 +14,16 @@ description: Интерактивный пошаговый онбординг Cl
 
 ## Карта этапов
 ```
-0 Разведка     → есть ли уже ~/.claude, vault? первый запуск?
-A Глобал OS    → ~/.claude/{CLAUDE.md, settings.json, references/, rules/, agents/}
-B База знаний  → Obsidian vault по Карпаты (raw/ wiki/ outputs/ + конституция + AGENTS.md рой)
+0  Разведка    → есть ли уже ~/.claude, vault? первый запуск? preinstall прошёл?
+A0 Установка   → прогон слоёв bootstrap.sh + ОПРОС ИНТЕГРАЦИЙ (попапы: GitHub/Firecrawl/...) [нуб-путь]
+A  Глобал OS    → ПОЛНЫЙ ГРИЛЛ P1–P5 → ~/.claude/{CLAUDE.md, settings.json, references/, manifests}
+B База знаний  → Obsidian vault по Карпаты (raw/ wiki/ outputs/ + конституция + AGENTS.md рой) [ОБЯЗАТ]
 C Template+боты→ claude-starter repo + skill bootstrap-project
 D Проект       → per-project структура (code/ agents/ specs/ ...) + gsd-new-project
 E Автоматизация→ ingest-hook, weekly health-check cron, parity Claude↔Codex
 ```
-Можно начать с любого этапа (спроси с какого), но дефолт — по порядку.
+Можно начать с любого этапа (спроси с какого), но дефолт — по порядку. A+B — ядро онбординга (B обязателен, на нём P5).
+Грилл драйвит `assets/interview-rubric.md` (банк вопросов P1–P5); пишет по `assets/composition-principles.md` (Карпаты). Триггер: ручной `/setup-os` ИЛИ nudge от SessionStart-хука `onboarding-detect.sh` на свежей машине.
 
 ---
 
@@ -33,28 +35,89 @@ which gh claude gsd 2>/dev/null
 ```
 Реши: чистая установка или дооформление. Не перезаписывай существующее без бэкапа (`cp X X.bak`).
 
+Проверь шаг 0: `which claude chezmoi brew`. Чего-то нет → попап «Сначала запусти `preinstall.sh` в Терминале (нужен пароль Mac)» + стоп (шаг 0 руками — sudo, агент не может).
+
 AskUserQuestion: «С чего начинаем?» → [Полный setup с нуля] [Только база знаний] [Только проектный scaffolder] [Дооформить существующее].
+Полный setup → Этап A0 (установка) перед гриллом.
 
 ---
 
-## Этап A — Глобальный OS (`~/.claude/`)
-Спроси (AskUserQuestion, один экран): имя · язык · 3-5 текущих проектов · стек · сервер для деплоя (да/нет).
+## Этап A0 — Установка системы (нуб-путь: движок + опрос интеграций)
 
-Создай (РАЗДЕЛЕНИЕ: личное и секреты — вне главного CLAUDE.md, только указатели):
-1. **`~/.claude/CLAUDE.md`** — ЛИН-конституция ≤200 строк (`assets/CLAUDE.template.md`). Только hot-факты + указатели. НЕ инлайнить личное/секреты.
-2. **`~/.claude/references/owner.md`** — все личные данные (`assets/owner.template.md`). В CLAUDE.md строка `@references/owner.md`.
-3. **`~/.claude/references/secrets-map.md`** — карта секретов (`assets/secrets-map.template.md`): ТОЛЬКО где лежит, не значения. В CLAUDE.md указатель для быстрого перехода. Файл в `.gitignore`.
-4. **`~/.claude/settings.json`** — `permissions.deny` на `**/.env`, `**/*secret*`, `**/.ssh/**`, secrets-map.md (`assets/settings.template.json`). После — smoke-test: Read .env должен блокнуть.
-5. **`~/.claude/references/`** — deploy.md, scrapegraph.md.
+> Дирижируешь установкой ТЫ. `bootstrap.sh` — детерминированный движок (идемпотентный, `--only`), ты гонишь его слои по порядку и между ними спрашиваешь попапами. Цель: чистый Mac → рабочая система, юзер только отвечает на вопросы.
+
+**1. Разрешение (снимает E1 — классификатор External Code).**
+AskUserQuestion: «Разрешаешь прогнать установочные скрипты Athena?» → [Да, доверяю] [Нет]. «Нет» → стоп.
+
+**2. Прогон слоёв** (каждый — 1 фраза зачем, затем `run`):
+
+| Слой | Команда | Зачем (юзеру) |
+|---|---|---|
+| 0 | `./bootstrap.sh --only=0` | база (идемпотентно — частью сделал preinstall) |
+| 1 | `./bootstrap.sh --only=1` | Сознание: дотфайлы агента |
+| 1b | `./bootstrap.sh --only=1b` | плагины → **попап подтверждения untrusted** (снимает E6) |
+| 2 | `./bootstrap.sh --only=2` | реестр способностей |
+| 3–6 | `--only=3..6` | проекты · знания · секреты/MCP · smoke |
+
+После каждого слоя — стамп в `~/.claude/.athena-onboarding-progress` (резюм с места обрыва).
+Если chezmoi спросит overwrite (E7, runtime-дрейф settings.json) — попап «отвечай `overwrite`».
+
+**3. ОПРОС ИНТЕГРАЦИЙ** (ядро нуб-пути — ставить-или-skip, никаких тихих дыр).
+
+Один AskUserQuestion **multiSelect** «Что подключаем? (что не выберешь — пропустим, добавишь позже)». По каждой выбранной — мини-поток. Словарь (вопрос → ставлю → fallback при skip):
+
+| Интеграция | Если «да» | Если skip |
+|---|---|---|
+| **GitHub** | `gh auth login` (откроет браузер) | проекты работают локально |
+| **Firecrawl** | спроси ключ → Keychain/`~/.secrets`/`.env` (**НЕ git**) | веб-каскад падает на WebSearch |
+| **Supabase** | MCP-reauth по `mcp-reauth.md` | — |
+| **Higgsfield** | MCP-reauth | — |
+| **Приватный overlay** | спроси git URL → `ATHENA_PRIVATE_REPO` в `athena.config.sh` → пере-прогон слоя 1 | generic-only (дефолт) |
+| **Vault знаний** | → Этап B (Карпаты) | skip-с-логом причины |
+
+**Секреты — правило НИКОГДА:** значение пишем в Keychain / `~/.secrets` (chmod 700) / `.env`. В репо/git — никогда. Только карта в `secrets-map.md`.
+
+**Gate полноты:** каждая интеграция = подключена ИЛИ явный skip-с-причиной (стамп). После A0 → Этап A (грилл P1–P5).
+
+---
+
+## Этап A — Глобальный OS через ПОЛНЫЙ ГРИЛЛ (`~/.claude/`)
+
+Не single-screen — **полный грилл P1–P5** (стиль `/grill-me`). Драйвит банк вопросов `assets/interview-rubric.md`; пишешь по `assets/composition-principles.md` (метод Карпаты, синтез-на-записи). Цель: из ответов **идеально** собрать конфиг, не дамп сырья.
+
+**Поток каждой фазы:** объясни 1 фразой зачем → AskUserQuestion (батч по домену из rubric) → **синтезируй** ответ в атомарный конфиг → запиши в целевой файл → покажи → чекпойнт-стамп → «дальше?».
+
+| Фаза | Собирает | Пишет (target) | Tier |
+|---|---|---|---|
+| **P1 Идентичность** | роль/занятость, язык, локация+ограничения, домены экспертизы | `references/owner.md` | hot |
+| **P2 Проекты+стек** | проекты (имя/статус/критичность), стек, что клонировать/ставить | `owner.md`, `projects.manifest`, `tools.manifest` | hot |
+| **P3 Стиль+правила** | model-стенс, коммуникация/caveman, структура ответа, НИКОГДА/ВСЕГДА, gate пакетов | `CLAUDE.md` (слоты `{{ }}`) | hot |
+| **P4 Операц-преференсы** | security-постура, design/UX-вкус+анти-паттерны, deploy, swarm, web-каскад | `references/{security,design,deploy,agents,scrapegraph}.md` | cold |
+| **P5 Инфра** | vault (Карпаты — Этап B), session-lifecycle, self-learning, **secrets-МАП** | `CLAUDE.md`+`references/`+`secrets-map.md`+vault | cold |
+
+**Запись (РАЗДЕЛЕНИЕ — личное/секреты вне CLAUDE.md, только указатели):**
+
+1. **`~/.claude/CLAUDE.md`** — копия `assets/CLAUDE.template.md` (проверенный скелет) + заполнить hot-слоты `{{ }}` из P3 (язык, model-стенс, доп НИКОГДА/ВСЕГДА). Глубину P4/P5 НЕ инлайнить — указатель `@references/*`. ≤200 строк.
+2. **`~/.claude/references/owner.md`** (`assets/owner.template.md`) — P1/P2. В CLAUDE.md строка `@references/owner.md`.
+3. **`~/.claude/references/secrets-map.md`** (`assets/secrets-map.template.md`) — P5 МАП: ТОЛЬКО где лежит, не значения. Файл в `.gitignore`. Чеклист на ручное заполнение Keychain/.env.
+4. **`~/.claude/settings.json`** (`assets/settings.template.json`) — `permissions.deny` секретов + SessionStart-хук `onboarding-detect.sh`. Smoke: Read .env блокнут.
+5. **`~/.claude/references/`** — P4 cold-файлы (deploy/security/design/agents/scrapegraph).
 6. **`~/.claude/rules/`** + **`agents/`** — если ecc/ уже есть, не трогать.
 
-**ЖЁСТКОЕ правило модели** (вшито в CLAUDE.template): перед каждой задачей выверять оптимальную модель; даже в дешёвом tier — если Opus 4.8 (или иная) лучше качество-на-токен для задачи, использовать ЕЁ. Убедись что этот блок в записанном CLAUDE.md.
+**Gate полноты (Карпаты):** каждый домен P1–P5 — заполнен ИЛИ явно пропущен-с-причиной (стамп в `~/.claude/.athena-onboarding-progress`). Нет тихих дыр. **Secrets:** только МАП, значений НЕ спрашивать/НЕ писать в репо (правило НИКОГДА).
 
-Покажи дерево. Подтверди.
+**Чекпойнт/резюм:** «полный грилл» = полное покрытие, НЕ один присест. После каждой фазы — стамп; можно паузить, резюмить с последней фазы (это и есть fast-path). По завершении → маркер `~/.claude/.athena-onboarded` (глушит детектор-хук). «Позже» → `~/.claude/.athena-onboarding-snooze`.
+
+**ЖЁСТКОЕ правило модели** (вшито в CLAUDE.template): перед каждой задачей выверять оптимальную модель по качеству-на-токен. Убедись что блок в записанном CLAUDE.md.
+
+Покажи дерево. Подтверди → переходи к Этапу B (Карпаты-vault — **обязателен**, P5 на нём держится).
 
 ---
 
-## Этап B — База знаний по Карпаты (LLM-wiki в Obsidian)
+## Этап B — База знаний по Карпаты (LLM-wiki) — ОБЯЗАТЕЛЬНО
+
+> Не опциональный этап: P5-инфра грилла держится на нём. Метод Карпаты — mandatory (детали `references/karpathy-method.md`). Пропустить можно ТОЛЬКО явным «нет vault» с логом причины (gate полноты).
+
 Спроси: путь к vault (дефолт `~/Мозг` или `~/Knowledge`). Существует Obsidian vault — подключаем, нет — создаём.
 
 Структура (метод Карпаты, синтез-на-записи, без vector DB):
@@ -126,12 +189,22 @@ AskUserQuestion: «С чего начинаем?» → [Полный setup с н
 - [ ] claude-starter + bootstrap-project работают
 - [ ] автоматизация (ingest/health/parity) поставлена
 
+**Мнемозина (подсистема памяти/знаний) — оффер свежей сборки.** Если в `projects.manifest` есть memory-подсистема — в конце предложи попапом (AskUserQuestion) поставить её. На «да» тяни **свежак из github**: нет папки → `git clone <url>` (дефолтный HEAD = последняя версия); есть → `git -C <path> pull --ff-only`. Затем её `install.sh`, если есть (из install-команды манифеста). Пусто/нет в манифесте/«нет» → скип. URL — из манифеста, не хардкодь.
+
+Застампь версию каркаса (база для будущего `athena-update`): `git -C ~/athena rev-parse HEAD > ~/.claude/.athena-version`.
+
 Предложи что улучшить дальше. Залогируй setup в vault `Лог обработки.md`.
 
 ## Файлы-шаблоны (создать рядом со SKILL.md)
-- `assets/CLAUDE.template.md` — лин глобальный (= наш черновик CLAUDE.md.ЧЕРНОВИК)
+
+- `assets/interview-rubric.md` — банк вопросов грилла P1–P5 (драйвит Этап A)
+- `assets/composition-principles.md` — как идеально писать конфиг (Карпаты, бюджет, hot/cold)
+- `assets/CLAUDE.template.md` — лин глобальный скелет + P3-слоты `{{ }}`
+- `assets/owner.template.md` — личные данные (P1/P2-слоты)
 - `assets/vault-CLAUDE.template.md` — конституция вики Карпаты
 - `assets/AGENTS.template.md` — реестр вики-роя
+- `assets/secrets-map.template.md` — карта секретов (gitignored, map-only)
 - `assets/settings.template.json` — deny секретов
 - `assets/bootstrap-project.template.md` — тело bootstrap-скилла
 - `references/karpathy-method.md` — метод подробно (из vault-нот)
+- `chezmoi/dot_claude/hooks/onboarding-detect.sh` — SessionStart-детектор первого запуска (nudge)

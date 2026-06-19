@@ -122,6 +122,15 @@ echo "[манифесты] синтаксис директив"
 # plugins.manifest: каждая значимая строка = marketplace|plugin (Слой 1b парсит по 1-му полю; KGB-22).
 chk "plugins.manifest без битых директив" "! grep -vE '^[[:space:]]*(#|\$|marketplace |plugin )' '$HERE/plugins.manifest'"
 
+echo "[skills] root → deployed chezmoi (дрейф = юзер получит старый/ноль скилл)"
+# Каждый root-скилл athena обязан иметь идентичную копию в chezmoi/dot_claude/skills/,
+# иначе фиксы/новые скиллы не доезжают до юзера (E10). chezmoi может нести БОЛЬШЕ
+# (deploy-only, напр. self-learning) — это норма, проверяем только root ⊆ chezmoi.
+for d in "$HERE"/skills/*/; do
+  n="$(basename "$d")"; cz="$HERE/chezmoi/dot_claude/skills/$n"
+  chk "skills/$n → chezmoi идентичен" "[ -d '$cz' ] && diff -rq '$d' '$cz' >/dev/null 2>&1"
+done
+
 echo "[паритет] Claude и Codex видят одно (если развёрнуто)"
 if [ -d "$HOME/.claude" ] && [ -d "$HOME/.codex" ]; then
   # Реальная сверка содержимого, не факт существования папок (KGB-23).
