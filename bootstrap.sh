@@ -44,9 +44,12 @@ ensure_private() {
 layer0_base() {
   phase 0 || return 0; say "Слой 0 — база системы"
   if ! xcode-select -p >/dev/null 2>&1; then run "xcode-select --install || true"; fi
-  # brew есть-но-не-в-PATH (E4: новая сессия без перезагрузки shell) → поднять окружение
-  if ! command -v brew >/dev/null && [ -x /opt/homebrew/bin/brew ]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
+  # brew есть-но-не-в-PATH (E4: новая сессия без перезагрузки shell) → поднять окружение.
+  # M-chip → /opt/homebrew, Intel → /usr/local.
+  if ! command -v brew >/dev/null; then
+    for b in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+      [ -x "$b" ] && { eval "$("$b" shellenv)"; break; }
+    done
   fi
   if ! command -v brew >/dev/null; then
     # Homebrew требует sudo+TTY — агент пароль ввести не может (E3). Внятный fail вместо сырого sudo.

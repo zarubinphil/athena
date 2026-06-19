@@ -8,7 +8,7 @@ Athena — переносимая агентная ОС: разворот все
 - `projects.manifest` / `tools.manifest` (+`.example`) — клон проектов (`~/Проекты`) и инструментов (`~/tools`, Слой 0b ДО Сознания). Реальные — в приватном overlay.
 - `rules/structure.md` — **конституция раскладки** (источник истины организации ФС). Менять осознанно.
 - `chezmoi/` — шаблоны дотфайлов Сознания (улучшенный канон из best-practices vault).
-- `skills/{setup-os,bootstrap-project,organize}` — рождение ОС, каркас проекта, авто-раскладка.
+- `skills/{setup-os,bootstrap-project,organize,athena-update}` — рождение ОС, каркас проекта, авто-раскладка, безопасное обновление живой системы (анализ→план→согласование→действие, бэкап+откат, `.athena-version`-стамп).
 - `claude-starter/` — эталон проекта, который Athena ставит конечному юзеру.
 - `projects.manifest` (+`.example`) · `secrets-checklist.md` · `mcp-reauth.md` · `launchd/` · `smoke/`.
 - `specs/` — фазовый план (читать первым). `docs/decisions/` — ADR.
