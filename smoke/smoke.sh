@@ -29,6 +29,8 @@ echo "[личное] нет имён/usernames/приватных идентиф
 # PCRE: Zarubin(?!phil) банит фамилию, но НЕ публичный GitHub-хэндл zarubinphil (clone/curl URL — публичен, не PII).
 PERSONAL_RE='(Philipp|Filipp|Zarubin(?!phil)|Филипп|Кирилов|Ломоносов|Менделеев|Калачов|com\.zarubin|7teenno1)'
 chk "нет личных данных в публичных tracked-файлах" "! git -C '$HERE' grep -IPni -e \"\$PERSONAL_RE\" -- ':!smoke/smoke.sh' ':!docs/audit-2026-06-16/**' >/dev/null 2>&1"
+# Email автора в истории = PII вне file-grep. Разрешён только GitHub noreply.
+chk "нет личных email в авторах коммитов" "! git -C '$HERE' log --format='%ae %ce' | tr ' ' '\n' | grep -vE '(noreply|^\$)' | grep -q ."
 
 echo "[канон] chezmoi-source Сознания на месте"
 for f in chezmoi/dot_claude/CLAUDE.md chezmoi/dot_claude/settings.json.tmpl chezmoi/dot_claude/AGENTS.md.tmpl chezmoi/dot_claude/hooks/security-guard.sh chezmoi/dot_claude/rules/structure.md; do
