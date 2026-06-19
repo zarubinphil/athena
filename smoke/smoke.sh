@@ -18,6 +18,7 @@ chk "нет реального projects.manifest в git" "! git -C '$HERE' ls-fi
 chk "нет athena.config.sh в git" "! git -C '$HERE' ls-files --error-unmatch athena.config.sh >/dev/null 2>&1"
 
 echo "[секреты] нет credential-shaped токенов (generic-паттерны)"
+# shellcheck disable=SC2034  # используется через eval в chk (строка 22)
 SECRET_RE='(AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{20,}|xox[baprs]-[A-Za-z0-9-]{10,}|sk-[A-Za-z0-9]{24,}|-----BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY-----|root@[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})'
 chk "нет ключей/private-key/root@ip" "! grep -rInE --exclude-dir=.git --exclude='smoke.sh' --exclude='*.log' \"\$SECRET_RE\" '$HERE' >/dev/null 2>&1"
 
@@ -27,6 +28,7 @@ echo "[личное] нет имён/usernames/приватных идентиф
 # *.log) и untracked (audit-2026-06-16/) в публичный каркас не попадают — git grep их не видит.
 # Исключения-pathspec: smoke.sh (сам содержит паттерн).
 # PCRE: Zarubin(?!phil) банит фамилию, но НЕ публичный GitHub-хэндл zarubinphil (clone/curl URL — публичен, не PII).
+# shellcheck disable=SC2034  # используется через eval в chk (строка 31)
 PERSONAL_RE='(Philipp|Filipp|Zarubin(?!phil)|Филипп|Кирилов|Ломоносов|Менделеев|Калачов|com\.zarubin|7teenno1)'
 chk "нет личных данных в публичных tracked-файлах" "! git -C '$HERE' grep -IPni -e \"\$PERSONAL_RE\" -- ':!smoke/smoke.sh' ':!docs/audit-2026-06-16/**' >/dev/null 2>&1"
 # Email автора в истории = PII вне file-grep. Разрешён только GitHub noreply.
@@ -89,6 +91,7 @@ GUARD="$HERE/chezmoi/dot_claude/hooks/security-guard.sh"
 ge() { printf '{"tool_input":{"file_path":"%s"}}' "$1" | bash "$GUARD" >/dev/null 2>&1; echo $?; }
 chk ".env → блок (exit 2)"                  '[ "$(ge /proj/.env)" = 2 ]'
 chk ".env.example → пропуск (exit 0)"       '[ "$(ge /proj/.env.example)" = 0 ]'
+# shellcheck disable=SC2088  # ~ в метке теста, путь реальный в кавычках
 chk "~/.secrets/* → блок"                   '[ "$(ge /Users/u/.secrets/db)" = 2 ]'
 chk "secret-shaped имя (db.key) → блок"     '[ "$(ge /proj/db.key)" = 2 ]'
 chk ".env.production → блок"                '[ "$(ge /proj/.env.production)" = 2 ]'
@@ -122,7 +125,9 @@ chk "plugins.manifest без битых директив" "! grep -vE '^[[:space
 echo "[паритет] Claude и Codex видят одно (если развёрнуто)"
 if [ -d "$HOME/.claude" ] && [ -d "$HOME/.codex" ]; then
   # Реальная сверка содержимого, не факт существования папок (KGB-23).
+  # shellcheck disable=SC2088  # ~ в метках тестов, пути через $HOME в кавычках
   chk "~/.claude/AGENTS.md есть" "[ -e '$HOME/.claude/AGENTS.md' ]"
+  # shellcheck disable=SC2088
   chk "~/.codex/AGENTS.md есть (паритет реестра)" "[ -e '$HOME/.codex/AGENTS.md' ]"
 else echo "  · дотфайлы ещё не развёрнуты (skip parity)"; fi
 

@@ -18,13 +18,14 @@ done
 say()  { printf '\033[1;36m▸ %s\033[0m\n' "$*" | tee -a "$LOG"; }
 ok()   { printf '\033[1;32m  ✓ %s\033[0m\n' "$*" | tee -a "$LOG"; }
 warn() { printf '\033[1;33m  ! %s\033[0m\n' "$*" | tee -a "$LOG"; }
-run()  { if [ "$DRY" = 1 ]; then echo "  [dry] $*" | tee -a "$LOG"; else eval "$@" >>"$LOG" 2>&1; fi; }
+run()  { if [ "$DRY" = 1 ]; then echo "  [dry] $*" | tee -a "$LOG"; else eval "$*" >>"$LOG" 2>&1; fi; }
 phase(){ [ -z "$ONLY" ] || [ "$ONLY" = "$1" ]; }
 
 [ "$(uname)" = "Darwin" ] || { warn "не macOS — OCR/launchd-части пропустятся"; }
 
 # Личная конфигурация (репо дотфайлов, vault, манифест проектов)
 CFG="$HERE/athena.config.sh"
+# shellcheck source=/dev/null
 if [ -f "$CFG" ]; then . "$CFG"; else warn "нет athena.config.sh — скопируй из athena.config.example.sh и заполни"; fi
 : "${ATHENA_DOTFILES_REPO:=}"      # ПРОДВИНУТОЕ: готовый внешний chezmoi-source целиком (минует merge)
 : "${ATHENA_PRIVATE_REPO:=}"       # git URL приватного overlay (athena-private) ИЛИ пусто = generic-only
@@ -114,6 +115,7 @@ layer1_brain() {
   [ "$DRY" = 1 ] || [ -f "$MERGED/.chezmoidata.yaml" ] || cp "$MERGED/.chezmoidata.yaml.example" "$MERGED/.chezmoidata.yaml" 2>/dev/null || true
 
   run "chezmoi init --apply --source '$MERGED'"
+  # shellcheck disable=SC2088  # ~ в тексте-сообщении, не путь
   ok "~/.claude · ~/.codex · ~/.agents разложены (merged-source)"
 
   # CIA-3: нормализация абс.путей в live-реестре. Source пишет `~/.agents/...` (tilde),
