@@ -53,7 +53,7 @@
 - Перед задачей: graph-first preflight реестра → лучшие skills/MCP/CLI (quality-first). Гейт `~/.agents/registry/CAPABILITY-PLANNING.md`.
 - Несколько финалистов — норма.
 - Дизайн/UI/UX: сначала подобрать skills, продумать порядок, потом код.
-- **Веб-поиск:** `sgai validate --json` → 1) Firecrawl → 2) ScrapeGraphAI → 3) WebSearch/WebFetch → 4) из памяти (пометить).
+- **Веб-поиск (каскад, что доступно):** 1) Firecrawl MCP → 2) ScrapeGraphAI → 3) WebSearch/WebFetch → 4) из памяти (пометить «требует верификации»).
 - Документация: Context7. Юрзадачи: реквизиты актов не выдумывать, проверять первоисточник.
 
 ## Память

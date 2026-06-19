@@ -2,14 +2,14 @@
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
     "deny": [
-      "Read(/{{ .chezmoi.homeDir }}/.claude/secrets/**)",
-      "Read(/{{ .chezmoi.homeDir }}/.claude/server.env)",
-      "Read(/{{ .chezmoi.homeDir }}/.claude/session-env/**)",
-      "Read(/{{ .chezmoi.homeDir }}/.ssh/**)",
-      "Read(/{{ .chezmoi.homeDir }}/.secrets/**)",
-      "Read(/{{ .chezmoi.homeDir }}/.config/gh/**)",
-      "Read(/{{ .chezmoi.homeDir }}/.git-credentials)",
-      "Read(/{{ .chezmoi.homeDir }}/.claude/mcp.json)",
+      "Read({{ .chezmoi.homeDir }}/.claude/secrets/**)",
+      "Read({{ .chezmoi.homeDir }}/.claude/server.env)",
+      "Read({{ .chezmoi.homeDir }}/.claude/session-env/**)",
+      "Read({{ .chezmoi.homeDir }}/.ssh/**)",
+      "Read({{ .chezmoi.homeDir }}/.secrets/**)",
+      "Read({{ .chezmoi.homeDir }}/.config/gh/**)",
+      "Read({{ .chezmoi.homeDir }}/.git-credentials)",
+      "Read({{ .chezmoi.homeDir }}/.claude/mcp.json)",
       "Read(**/.env)",
       "Read(**/.env.*)",
       "Read(**/*secret*)",
@@ -21,7 +21,23 @@
       "Edit(**/.env)",
       "Write(**/.env)",
       "Edit(**/*secret*)",
-      "Write(**/*secret*)"
+      "Write(**/*secret*)",
+      "Write({{ .chezmoi.homeDir }}/.ssh/**)",
+      "Edit({{ .chezmoi.homeDir }}/.ssh/**)",
+      "Write({{ .chezmoi.homeDir }}/.secrets/**)",
+      "Edit({{ .chezmoi.homeDir }}/.secrets/**)",
+      "Write({{ .chezmoi.homeDir }}/.git-credentials)",
+      "Edit({{ .chezmoi.homeDir }}/.git-credentials)",
+      "Write({{ .chezmoi.homeDir }}/.claude/mcp.json)",
+      "Edit({{ .chezmoi.homeDir }}/.claude/mcp.json)",
+      "Write(**/*.pem)",
+      "Edit(**/*.pem)",
+      "Write(**/*.key)",
+      "Edit(**/*.key)",
+      "Write(**/*.ovpn)",
+      "Edit(**/*.ovpn)",
+      "Write(**/*credential*)",
+      "Edit(**/*credential*)"
     ]
   },
   "hooks": {
@@ -32,6 +48,16 @@
           {
             "type": "command",
             "command": "bash \"{{ .chezmoi.homeDir }}/.claude/hooks/security-guard.sh\"",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"{{ .chezmoi.homeDir }}/.claude/hooks/bash-guard.sh\"",
             "timeout": 5
           }
         ]

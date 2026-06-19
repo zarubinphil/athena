@@ -71,4 +71,4 @@ conflict-check: не противоречит ~/.claude/CLAUDE.md, AGENTS.md, ho
 
 ## 9. Свежесть (анти-дрейф)
 
-Это правило ревизуется на каждом ретро. Конфликт с `~/.claude/CLAUDE.md`/`AGENTS.md`/hooks → чинить немедленно. Меняешь раскладку — обнови `organize` skill и bootstrap-project/gsd/kb-classify в локстеп, иначе рост пойдёт по старому.
+Это правило ревизуется на каждом ретро. Конфликт с `~/.claude/CLAUDE.md`/`AGENTS.md`/hooks → чинить немедленно. Меняешь раскладку — обнови `organize` skill и bootstrap-project/gsd/kb-pipeline в локстеп, иначе рост пойдёт по старому.

@@ -35,7 +35,7 @@ chk "нет личных данных в публичных tracked-файлах
 chk "нет личных email в авторах коммитов" "! git -C '$HERE' log --format='%ae %ce' | tr ' ' '\n' | grep -vE '(noreply|^\$)' | grep -q ."
 
 echo "[канон] chezmoi-source Сознания на месте"
-for f in chezmoi/dot_claude/CLAUDE.md chezmoi/dot_claude/settings.json.tmpl chezmoi/dot_claude/AGENTS.md.tmpl chezmoi/dot_claude/hooks/security-guard.sh chezmoi/dot_claude/rules/structure.md; do
+for f in chezmoi/dot_claude/CLAUDE.md chezmoi/dot_claude/settings.json.tmpl chezmoi/dot_claude/AGENTS.md.tmpl chezmoi/dot_claude/hooks/security-guard.sh chezmoi/dot_claude/hooks/bash-guard.sh chezmoi/dot_claude/rules/structure.md; do
   chk "$f" "[ -f '$HERE/$f' ]"
 done
 chk "settings.json deny-щит присутствует" "grep -q '\"deny\"' '$HERE/chezmoi/dot_claude/settings.json.tmpl'"
@@ -99,6 +99,29 @@ chk "secrets/db.key (в подпапке) → блок"    '[ "$(ge /proj/secret
 chk "id_ed25519 → блок"                     '[ "$(ge /Users/u/.ssh/id_ed25519)" = 2 ]'
 chk "обычный .md → пропуск"                 '[ "$(ge /proj/readme.md)" = 0 ]'
 chk "кириллический путь .env → блок (unicode-safe)" '[ "$(ge /Пользователь/проект/.env)" = 2 ]'
+
+echo "[bash-guard] exec-gap закрыт (functional, не только синтаксис)"
+BG="$HERE/chezmoi/dot_claude/hooks/bash-guard.sh"
+chk "bash-guard.sh присутствует" "[ -f '$BG' ]"
+chk "bash-guard синтаксис" "bash -n '$BG'"
+chk "matcher Bash проведён в settings.tmpl" "grep -q '\"Bash\"' '$HERE/chezmoi/dot_claude/settings.json.tmpl'"
+# mock-JSON {command} на stdin → exit 2=блок, 0=пропуск
+bge() { printf '{"tool_input":{"command":"%s"}}' "$1" | bash "$BG" >/dev/null 2>&1; echo $?; }
+chk "redirect в ~/.env → блок"            '[ "$(bge "echo SK > /Users/u/.env")" = 2 ]'
+chk "tee в .ssh → блок"                   '[ "$(bge "echo k | tee /Users/u/.ssh/id_rsa")" = 2 ]'
+chk "git push --force main → блок"        '[ "$(bge "git push --force origin main")" = 2 ]'
+chk "git push -f master → блок"           '[ "$(bge "git push -f master")" = 2 ]'
+chk "cat секрета → блок"                  '[ "$(bge "cat /Users/u/.ssh/id_ed25519")" = 2 ]'
+chk "обычный ls → пропуск"                '[ "$(bge "ls -la /tmp")" = 0 ]'
+chk "git push в фичеветку → пропуск"      '[ "$(bge "git push origin feature/x")" = 0 ]'
+
+echo "[анти-дрейф] lockstep-скиллы из structure.md §9 ∃ на диске + нет kb-classify-дрейфа"
+# structure.md §9 называет skills для локстеп-обновления — каждый обязан существовать,
+# иначе правило ссылается в пустоту (мёртвая ссылка в каноне).
+for s in organize bootstrap-project kb-pipeline; do
+  chk "skill '$s' существует (root или chezmoi)" "[ -d '$HERE/skills/$s' ] || [ -d '$HERE/chezmoi/dot_claude/skills/$s' ] || ls -d '$HOME'/.claude/skills/$s >/dev/null 2>&1 || grep -rq '$s' '$HERE/specs' 2>/dev/null"
+done
+chk "нет осиротевшего kb-classify в structure/organize" "! grep -rIn 'kb-classify' '$HERE/rules/structure.md' '$HERE/chezmoi/dot_claude/rules/structure.md' '$HERE/skills/organize' '$HERE/chezmoi/dot_claude/skills/organize' >/dev/null 2>&1"
 
 echo "[скрипты] валидны"
 chk "bootstrap.sh синтаксис" "bash -n '$HERE/bootstrap.sh'"
