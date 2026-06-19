@@ -17,7 +17,7 @@ Generic-репо под открытый GitHub, clean-room (боевой `~/.cl
 
 ## Фаза 2 — курирование канона Сознания (chezmoi-source) ✓
 Generic chezmoi-source собран (чистая пересборка, НЕ дамп 1.2 ГБ):
-- [x] `dot_claude`: `CLAUDE.md` (лин-роутер) · `AGENTS.md.tmpl` (VPS-IP вычищен, пути templated) · `settings.json.tmpl` (deny-щит 20 паттернов) · `hooks/security-guard.sh` (детерминированный, behavior-tested) · `rules/` (structure + ECC 20 наборов: common/web/zh + 17 языков) · 30 generic ECC-агентов · `scripts/health-check.sh`
+- [x] `dot_claude`: `CLAUDE.md` (лин-роутер) · `AGENTS.md.tmpl` (VPS-IP вычищен, пути templated) · `settings.json.tmpl` (deny-щит 20 паттернов) · `hooks/security-guard.sh` (детерминированный, behavior-tested) · `rules/` (structure + ECC 19 наборов: common/web + 17 языков) · 30 generic ECC-агентов · `scripts/health-check.sh`
 - [x] `dot_codex`: symlink-паритет → claude-канон
 - [x] `dot_agents`: registry SSOT (12 скриптов HOME-генерик + REGISTRY/CAPABILITY-PLANNING/SHARED docs)
 - [x] плагины: `plugins.manifest` + bootstrap Слой 1b (marketplace add + install)
