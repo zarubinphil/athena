@@ -131,7 +131,7 @@ layer1_brain() {
 
 # ───────── Слой 1b: плагины (reinstall из marketplaces) ─────────
 layer1b_plugins() {
-  phase 1 || return 0; say "Слой 1b — плагины"
+  phase 1b || return 0; say "Слой 1b — плагины"
   command -v claude >/dev/null || { warn "claude CLI нет — плагины пропущены"; return 0; }
   MAN="$HERE/plugins.manifest"
   [ -f "$MAN" ] || { warn "нет plugins.manifest — пропуск"; return 0; }
@@ -163,9 +163,12 @@ layer3_projects() {
   while read -r url path cmd; do
     [ -z "${url:-}" ] && continue; case "$url" in \#*) continue ;; esac
     dest="$HOME/Проекты/$path"
-    [ -d "$dest/.git" ] || run "git clone '$url' '$dest'"
-    [ -n "${cmd:-}" ] && run "cd '$dest' && $cmd" || true
-    ok "проект $path"
+    if [ -d "$dest/.git" ] || run "git clone '$url' '$dest'"; then
+      [ -n "${cmd:-}" ] && run "cd '$dest' && $cmd" || true
+      ok "проект $path"
+    else
+      warn "клон не удался: $url (лог: $LOG)"
+    fi
   done < "$ATHENA_PROJECTS_MANIFEST"
 }
 

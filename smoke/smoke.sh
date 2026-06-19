@@ -27,7 +27,7 @@ echo "[личное] нет имён/usernames/приватных идентиф
 # *.log) и untracked (audit-2026-06-16/) в публичный каркас не попадают — git grep их не видит.
 # Исключения-pathspec: smoke.sh (сам содержит паттерн).
 # PCRE: Zarubin(?!phil) банит фамилию, но НЕ публичный GitHub-хэндл zarubinphil (clone/curl URL — публичен, не PII).
-PERSONAL_RE='(Philipp|Zarubin(?!phil)|Филипп|Кирилов|Ломоносов|Менделеев|Калачов|com\.zarubin)'
+PERSONAL_RE='(Philipp|Filipp|Zarubin(?!phil)|Филипп|Кирилов|Ломоносов|Менделеев|Калачов|com\.zarubin|7teenno1)'
 chk "нет личных данных в публичных tracked-файлах" "! git -C '$HERE' grep -IPni -e \"\$PERSONAL_RE\" -- ':!smoke/smoke.sh' ':!docs/audit-2026-06-16/**' >/dev/null 2>&1"
 
 echo "[канон] chezmoi-source Сознания на месте"

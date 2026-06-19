@@ -74,7 +74,7 @@ say "3. settings.json → render → json"
 SJ="$MERGED/dot_claude/settings.json.tmpl"
 if [ -f "$SJ" ]; then
   render "$SJ" > "$MERGED/.settings.json"
-  if python3 -m json.tool "$MERGED/.settings.json" >/dev/null 2>&1; then grn "settings.json валиден (homeDir+node_bin)"; else red "settings.json НЕВАЛИДЕН после рендера"; fi
+  if node -e "JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'))" "$MERGED/.settings.json" >/dev/null 2>&1; then grn "settings.json валиден (homeDir+node_bin)"; else red "settings.json НЕВАЛИДЕН после рендера"; fi
 else yel "нет settings.json.tmpl в merged"; fi
 
 # ── 4. Скрипты-шаблоны (*.sh.tmpl, run_once_) → render → bash/zsh -n ──
