@@ -3,6 +3,7 @@
 Athena — переносимая агентная ОС: разворот всей системы владельца на новом Mac одной командой. Этот репо — generic/public каркас (без личных данных).
 
 ## Карта
+- `preinstall.sh` — Шаг 0 руками в Терминале (brew+CLI+claude, нужен пароль Mac; `curl|bash`). Единственное вне Claude. Дальше: `claude` → `/setup-os` (дирижёр установки + опрос интеграций попапами).
 - `bootstrap.sh` — оркестратор слоёв 0–6 (+0b tools, idempotent, `$HOME`, читает `athena.config.sh`). Слой 1 = merged-source: generic `chezmoi/` ⊕ приватный overlay (`ATHENA_PRIVATE_REPO`, Ф4) → один `chezmoi apply`.
 - `projects.manifest` / `tools.manifest` (+`.example`) — клон проектов (`~/Проекты`) и инструментов (`~/tools`, Слой 0b ДО Сознания). Реальные — в приватном overlay.
 - `rules/structure.md` — **конституция раскладки** (источник истины организации ФС). Менять осознанно.

@@ -15,13 +15,27 @@
 
 ---
 
+**Ставится в два движения.**
+
+**Шаг 1.** Вставь в Терминал. Спросит пароль Mac, это один раз и нестрашно.
+
 ```bash
-git clone <repo> ~/Проекты/athena && cd ~/Проекты/athena
-cp athena.config.example.sh athena.config.sh   # впиши свои репо / значения
-./bootstrap.sh                                   # или --dry-run для предпросмотра
+curl -fsSL https://raw.githubusercontent.com/zarubinphil/athena/main/preinstall.sh | bash
 ```
 
-Это вся настройка. Никакого длинного чеклиста, нечего забыть, и нет двух машин, которые загадочно ведут себя по-разному.
+Подтянет Homebrew, пару CLI и сам Claude Code. Это единственное, что делаешь руками: Homebrew просит пароль, а агент его не наберёт.
+
+**Шаг 2.** Забери репо, открой Claude и просто отвечай на то, что он спросит.
+
+```bash
+git clone https://github.com/zarubinphil/athena ~/athena && cd ~/athena
+claude
+# дальше набери:  /setup-os
+```
+
+Дальше `/setup-os` собирает систему слой за слоем и при каждой развилке кидает вопрос: нужен GitHub? Firecrawl? база знаний? Что не нужно, отвечаешь «нет», добавишь когда захочешь. Больше ничего вводить не надо.
+
+> Если уже свой в теме: `cp athena.config.example.sh athena.config.sh`, потом `./bootstrap.sh` гонит движок напрямую, без Claude (`--dry-run`, чтобы сперва глянуть).
 
 ---
 

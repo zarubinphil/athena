@@ -44,8 +44,14 @@ ensure_private() {
 layer0_base() {
   phase 0 || return 0; say "Слой 0 — база системы"
   if ! xcode-select -p >/dev/null 2>&1; then run "xcode-select --install || true"; fi
+  # brew есть-но-не-в-PATH (E4: новая сессия без перезагрузки shell) → поднять окружение
+  if ! command -v brew >/dev/null && [ -x /opt/homebrew/bin/brew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  fi
   if ! command -v brew >/dev/null; then
-    run '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
+    # Homebrew требует sudo+TTY — агент пароль ввести не может (E3). Внятный fail вместо сырого sudo.
+    warn "Homebrew не установлен. Шаг 0 делается руками: запусти preinstall.sh в Терминале (нужен пароль Mac)."
+    return 0
   fi
   command -v brew >/dev/null && run "brew bundle --file '$HERE/Brewfile'" && ok "Brewfile применён"
   command -v claude >/dev/null && ok "claude CLI готов" || warn "claude CLI: установи Claude Code"

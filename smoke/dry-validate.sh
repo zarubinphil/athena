@@ -40,8 +40,9 @@ say "1. merged-source: generic ⊕ private overlay → temp"
 rsync -a --delete --exclude '.git' "$HERE/chezmoi/" "$MERGED/"
 if [ -d "$PRIV/chezmoi" ]; then
   rsync -a --exclude '.git' "$PRIV/chezmoi/" "$MERGED/"
-  # overlay приземлился? проверяем приватный маркер-файл
-  [ -f "$MERGED/run_once_after_30-telegram-env.sh.tmpl" ] && grn "overlay наложен (run_once_ виден в merged)" || red "overlay НЕ наложен — run_once_ отсутствует в merged"
+  # overlay приземлился? дженерик-инвариант: любой файл overlay виден в merged (без хардкода приватных артефактов)
+  ov_first="$(cd "$PRIV/chezmoi" && find . -type f -not -path '*/.git/*' | head -1 | sed 's|^\./||')"
+  if [ -n "$ov_first" ] && [ -e "$MERGED/$ov_first" ]; then grn "overlay наложен ($ov_first виден в merged)"; else red "overlay НЕ наложен — $ov_first отсутствует в merged"; fi
 elif [ "${ATHENA_EXPECT_OVERLAY:-0}" = 1 ]; then
   red "приватный overlay ОЖИДАЛСЯ ($PRIV/chezmoi), но отсутствует — generic-only прогон НЕ полон (ATHENA_EXPECT_OVERLAY=1)"
 else
