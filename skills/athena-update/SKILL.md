@@ -25,7 +25,14 @@ BASE="$(cat "$HOME/.claude/.athena-version" 2>/dev/null || git rev-parse HEAD)"
 git log --oneline "$BASE..origin/main"          # что нового
 git diff --stat "$BASE" origin/main             # какие файлы тронуты
 git status -s                                    # локальные правки репо (форк/ручные)
-command -v chezmoi >/dev/null && chezmoi diff 2>/dev/null | head -100   # дрейф живого ~/.claude vs source
+# chezmoi sourceDir ДОЛЖЕН резолвить merged-source (athena-merged-source), не дефолт ~/.local/share/chezmoi.
+# Иначе diff ложно-пуст → «нет дрейфа», а apply бьёт в пустой source. Чинит bootstrap (config), но проверь:
+if command -v chezmoi >/dev/null; then
+  SP="$(chezmoi source-path 2>/dev/null)"
+  case "$SP" in *athena-merged-source) chezmoi diff 2>/dev/null | head -100 ;;
+    *) echo "⚠ chezmoi source-path='$SP' ≠ merged-source — конфиг не запечён, перезапусти bootstrap --only=1 ПЕРЕД apply" ;;
+  esac
+fi
 ```
 
 Классифицируй изменения по областям (что меняется → что делать):

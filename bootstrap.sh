@@ -114,6 +114,15 @@ layer1_brain() {
   # chezmoi-данные: если в merged нет .chezmoidata.yaml — поднять из generic-.example.
   [ "$DRY" = 1 ] || [ -f "$MERGED/.chezmoidata.yaml" ] || cp "$MERGED/.chezmoidata.yaml.example" "$MERGED/.chezmoidata.yaml" 2>/dev/null || true
 
+  # Персист sourceDir → конфиг. БЕЗ него `init --source` не запекает путь (нет config-шаблона
+  # в source) → bare `chezmoi diff/apply` (skill athena-update) бьют в ДЕФОЛТ ~/.local/share/chezmoi
+  # (пусто) → тихий «нет дрейфа» и битый apply. Простой онбординг: после bootstrap `chezmoi` без --source.
+  CM_CFG="$HOME/.config/chezmoi/chezmoi.toml"
+  if [ "$DRY" = 1 ]; then echo "  [dry] persist $CM_CFG (sourceDir=$MERGED)"; else
+    mkdir -p "$(dirname "$CM_CFG")"
+    printf 'sourceDir = "%s"\n' "$MERGED" > "$CM_CFG"
+  fi
+
   run "chezmoi init --apply --source '$MERGED'"
   # shellcheck disable=SC2088  # ~ в тексте-сообщении, не путь
   ok "~/.claude · ~/.codex · ~/.agents разложены (merged-source)"

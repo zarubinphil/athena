@@ -168,9 +168,12 @@ if [ -x "$HERE/smoke/dry-validate.sh" ]; then
   chk "dry-validate проходит" "'$HERE/smoke/dry-validate.sh' >/dev/null 2>&1"
 else echo "  · dry-validate.sh нет (skip)"; fi
 
+echo "[chezmoi] bootstrap персистит sourceDir (иначе bare chezmoi = дефолт-source)"
+chk "bootstrap пишет chezmoi.toml sourceDir" "grep -q 'sourceDir = ' '$HERE/bootstrap.sh' && grep -q 'chezmoi.toml' '$HERE/bootstrap.sh'"
+
 echo "[guard] bash-guard: деструктив=блок, echo-литерал=пропуск"
 if [ -x "$HERE/smoke/bash-guard.test.sh" ]; then
-  chk "bash-guard 8 кейсов" "'$HERE/smoke/bash-guard.test.sh' >/dev/null 2>&1"
+  chk "bash-guard 11 кейсов" "'$HERE/smoke/bash-guard.test.sh' >/dev/null 2>&1"
 else echo "  · bash-guard.test.sh нет (skip)"; fi
 
 [ "$fail" = 0 ] && echo "SMOKE OK" || echo "SMOKE FAIL"
