@@ -168,5 +168,10 @@ if [ -x "$HERE/smoke/dry-validate.sh" ]; then
   chk "dry-validate проходит" "'$HERE/smoke/dry-validate.sh' >/dev/null 2>&1"
 else echo "  · dry-validate.sh нет (skip)"; fi
 
+echo "[guard] bash-guard: деструктив=блок, echo-литерал=пропуск"
+if [ -x "$HERE/smoke/bash-guard.test.sh" ]; then
+  chk "bash-guard 8 кейсов" "'$HERE/smoke/bash-guard.test.sh' >/dev/null 2>&1"
+else echo "  · bash-guard.test.sh нет (skip)"; fi
+
 [ "$fail" = 0 ] && echo "SMOKE OK" || echo "SMOKE FAIL"
 exit "$fail"
