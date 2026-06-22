@@ -176,5 +176,10 @@ if [ -x "$HERE/smoke/bash-guard.test.sh" ]; then
   chk "bash-guard 11 кейсов" "'$HERE/smoke/bash-guard.test.sh' >/dev/null 2>&1"
 else echo "  · bash-guard.test.sh нет (skip)"; fi
 
+echo "[guard] git-leak-guard: ключ в staged=блок коммита, чисто=пропуск"
+if [ -x "$HERE/smoke/git-leak-guard.test.sh" ]; then
+  chk "git-leak-guard 5 кейсов" "'$HERE/smoke/git-leak-guard.test.sh' >/dev/null 2>&1"
+else echo "  · git-leak-guard.test.sh нет (skip)"; fi
+
 [ "$fail" = 0 ] && echo "SMOKE OK" || echo "SMOKE FAIL"
 exit "$fail"

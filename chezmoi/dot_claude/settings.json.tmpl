@@ -59,6 +59,11 @@
             "type": "command",
             "command": "bash \"{{ .chezmoi.homeDir }}/.claude/hooks/bash-guard.sh\"",
             "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"{{ .chezmoi.homeDir }}/.claude/hooks/git-leak-guard.sh\"",
+            "timeout": 10
           }
         ]
       }
