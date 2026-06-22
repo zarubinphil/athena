@@ -162,8 +162,14 @@ layer1b_plugins() {
 layer2_registry() {
   phase 2 || return 0; say "Слой 2 — реестр способностей"
   R="$HOME/.agents/registry/scripts"
-  [ -d "$R" ] && run "cd '$R' && (python3 build_registry.py; python3 build_views.py; python3 validate.py) || true" \
+  [ -d "$R" ] && run "cd '$R' && (node build-skill-index.mjs; python3 build_registry.py; python3 build_views.py; python3 validate.py) || true" \
     && ok "registry пересобран" || warn "нет ~/.agents/registry — придёт с дотфайлами"
+  # thin-session: спрятать массу личных скиллов из инжекта Claude (skillOverrides=
+  # user-invocable-only) — чистый старт сессии (~11k токенов экономии). Аллоулист остаётся
+  # видимым; остальное достаётся router-скиллом athena-research + UserPromptSubmit-хуком и /name.
+  # Идемпотентно, карта выводится из локальной ФС → ~/.claude/settings.local.json.
+  GSO="$HOME/.claude/scripts/gen-skill-overrides.mjs"
+  [ -f "$GSO" ] && run "node '$GSO'" && ok "thin-session: скиллы скрыты из инжекта (allowlist on)" || true
 }
 
 # ───────── Слой 3: проекты (Работа) ─────────

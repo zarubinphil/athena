@@ -182,8 +182,9 @@ function qualityBoost(record, lexicalScore, routeBoost) {
   if (!registryScore) return 0;
   if (lexicalScore <= 0 && routeBoost <= 0) return 0;
 
-  const usageAdj = Math.min(18, Number(reg.usage_30d || reg.usage_count || 0) * 3);
-  return Math.round(registryScore * 0.9 + usageAdj);
+  // usage/frequency intentionally excluded from ranking — collected for analytics
+  // only (one past use must not pin a skill above genuinely better matches).
+  return Math.round(registryScore * 0.9);
 }
 
 function costRank(cost) {
@@ -219,8 +220,7 @@ const scored = index.records
   .sort((a, b) =>
     b.route_score - a.route_score ||
     b.registry_score - a.registry_score ||
-    b.usage_30d - a.usage_30d ||
-    b.usage_count - a.usage_count ||
+    // usage tiebreakers removed — frequency must not affect ordering/selection.
     costRank(a.cost_tier) - costRank(b.cost_tier) ||
     a.path.localeCompare(b.path)
   );

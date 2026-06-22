@@ -162,8 +162,11 @@ def effectiveness(stars, rating, parity_warn, usage_norm=0.0,
     quality = (rating or 3) / 5            # real output quality (my judgement)
     reach = stars_norm(stars)              # community proof — weak signal
     proven = success_rate if (runs >= 3 and success_rate is not None) else reach
-    val = round(100 * (0.42 * quality + 0.25 * proven + 0.18 * reach
-                       + 0.10 * usage_norm + 0.05 * fresh))
+    # usage/frequency deliberately NOT scored — collected for analytics only, never
+    # ranks (one past use must not pin a skill to the top). Its old 0.10 weight folds
+    # into quality so the score stays QUALITY-led and on a 0-100 scale. usage_norm is
+    # still accepted (callers pass it) but intentionally unused here.
+    val = round(100 * (0.52 * quality + 0.25 * proven + 0.18 * reach + 0.05 * fresh))
     if parity_warn:
         val -= 10
     if archived:

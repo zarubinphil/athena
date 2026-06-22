@@ -4,6 +4,7 @@ import path from "node:path";
 
 const HOME = process.env.HOME;
 const roots = [
+  path.join(HOME, ".claude/skills"),
   path.join(HOME, ".agents/skills"),
   path.join(HOME, ".codex/skills"),
   path.join(HOME, ".codex/plugins/cache"),
@@ -358,6 +359,23 @@ for (const file of skillFiles) {
   record.keywords = keywordsFor(record);
   records.push(record);
 }
+
+// Thin-session: collapse parity-duplicate skills (same id present across
+// .claude/skills, .agents/skills, .codex/skills) into ONE record, preferring
+// the earliest root above (.claude first = canonical, /name-invocable copy the
+// router should Read). Without this, adding .claude/skills would double records
+// for every parity-synced skill. ponytail: id-dedup, path-level dedup below still runs.
+const rootRank = (r) => {
+  const i = roots.indexOf(r);
+  return i === -1 ? 999 : i;
+};
+const bestSkillById = new Map();
+for (const rec of records) {
+  const prev = bestSkillById.get(rec.id);
+  if (!prev || rootRank(rec.root) < rootRank(prev.root)) bestSkillById.set(rec.id, rec);
+}
+records.length = 0;
+records.push(...bestSkillById.values());
 
 for (const record of await configuredCapabilities()) {
   records.push(record);

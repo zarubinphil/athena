@@ -155,6 +155,8 @@ Every time an AI assistant has to rediscover its own tools, re-read scattered in
 
 Less wandering means fewer tokens spent on overhead and more spent on your actual problem. The structure does the remembering, so the assistant doesn't have to.
 
+**Thin session — thousands of skills, near-zero startup cost.** Listing every skill to the assistant up front costs ~11k tokens *per session*. Athena hides the bulk behind a native, reversible `skillOverrides` map and surfaces only the ~5 most relevant skills per prompt (a fail-open `UserPromptSubmit` router), so the model starts clean and pulls capability on demand — every skill still reachable by `/name`. **~11k tokens saved per session.** See [docs/thin-session.md](docs/thin-session.md).
+
 ---
 
 ## Why it's efficient (in short)

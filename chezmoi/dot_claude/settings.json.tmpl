@@ -68,6 +68,18 @@
         ]
       }
     ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"{{ .chezmoi.homeDir }}/.claude/hooks/skill-router.mjs\"",
+            "timeout": 6,
+            "statusMessage": "GraphiFy skill routing..."
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
         "hooks": [
