@@ -1,6 +1,7 @@
 # Athena — справочник функций (RU)
 
 > English version: [FEATURES.en.md](FEATURES.en.md) · Назад к [README](../README.ru.md)
+> Дополнение: [перенос идей Mnemazine в AthenaOS](MNEMAZINE-AGENTOS-TRANSFER.ru.md)
 
 <p align="center">
   <img src="assets/six-layers.png" alt="Слоистый разворот Athena" width="85%">
