@@ -1,0 +1,83 @@
+# AthenaOS — directed handoff graph (Phase 7, Local Agent Contract)
+# Engine-agnostic: Claude Code and Codex follow the same graph; only the runner adapter differs.
+# A pipeline without an allowed-transition graph is a draft, not production.
+# Validated by smoke/agent-contract.sh (passport + integrity gates).
+
+version: 1
+
+# Entry boundary (the input door, not an agent).
+entry: intake
+
+# Runtime agents. Each id must have a passport in role-passports/<id>.md.
+agents:
+  - id: athena-router
+    role: route officer
+    input: job envelope
+    output: route card
+    tools: [capability-plan, route-skills, project-yaml]
+  - id: athena-guard
+    role: intake census
+    input: raw inputs
+    output: census + risk score
+    tools: [shasum, find, secret-scan]
+  - id: athena-runner
+    role: provider adapter
+    input: run_job
+    output: outbox artifacts
+    tools: [claude-adapter, codex-adapter, git-worktree]
+  - id: athena-reconciler
+    role: coverage ledger
+    input: expected vs produced
+    output: coverage marker
+    tools: [ledger, grep]
+  - id: athena-reviewer
+    role: eval / release gate
+    input: artifacts + eval_spec
+    output: verdict
+    tools: [eval_spec, report-quality-gate, agent-architecture-audit]
+  - id: athena-librarian
+    role: knowledge curator
+    input: approved artifacts
+    output: vault note + indexes
+    tools: [knowledge-ops, graphify, kb-embed]
+  - id: athena-steward
+    role: weekly governance
+    input: eval records
+    output: improvement candidates
+    tools: [registry, drift-check]
+
+# Allowed transitions. Every edge MUST carry a `when`.
+handoffs:
+  - { from: intake,            to: athena-guard,      when: always,             payload: raw inputs }
+  - { from: athena-guard,      to: athena-router,     when: census passed,      payload: census + risk }
+  - { from: athena-guard,      to: athena-reconciler, when: census passed,      payload: expected-artifact set }
+  - { from: athena-router,     to: athena-runner,     when: route approved,     payload: run_job envelope }
+  - { from: athena-runner,     to: athena-reviewer,   when: artifacts produced, payload: outbox artifacts }
+  - { from: athena-runner,     to: rescue-runner,     when: runner stuck,       payload: handoff pack (no secrets) }
+  - { from: rescue-runner,     to: athena-reviewer,   when: rescue produced,    payload: outbox artifacts }
+  - { from: athena-reconciler, to: athena-reviewer,   when: coverage complete,  payload: coverage marker }
+  - { from: athena-reviewer,   to: athena-librarian,  when: verdict pass,       payload: approved artifacts }
+  - { from: athena-librarian,  to: report,            when: vault written,      payload: visual report + tail }
+  - { from: athena-steward,    to: report,            when: weekly,             payload: improvement candidates }
+
+# Disallowed transitions. Every entry MUST carry a `why`.
+forbidden:
+  - { from: athena-runner,    to: deliver,        why: medium/high risk needs reviewer verdict first }
+  - { from: athena-router,    to: external,       why: no external action without human approval }
+  - { from: athena-runner,    to: vault,          why: vault writes go through the librarian, not the runner }
+  - { from: rescue-runner,    to: rescue-runner,  why: one rescue attempt only, no loop before human review }
+  - { from: athena-librarian, to: enrich,         why: a storage role does not enrich or transform content }
+  - { from: any,              to: secret-path,    why: no agent touches secret/auth/session/cache paths }
+
+# Gates run by smoke/agent-contract.sh.
+gates:
+  - after: graph
+    name: handoff-integrity
+    checks:
+      - every agent has a passport
+      - every handoff has a when
+      - every forbidden has a why
+      - no orphan agent (each appears in handoffs)
+  - after: librarian
+    name: final-learning-tail
+    checks: [brief_md, agent_trace, self_reflection, most_important]

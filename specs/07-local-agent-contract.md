@@ -81,8 +81,8 @@ All paths on `$HOME` / chezmoi `.tmpl`; zero hardcoded `/Users` or `/srv`.
 ## Implementation order (10 steps, amended)
 
 1. `role-passports/` — 7 passports (canon format: model/tools/contract/won't). **[done]**
-2. `handoff-graph.yaml` — machine-readable (per-edge `when/payload`, forbidden ⊕ rescue/secret, `final-learning-tail` gate).
-3. `smoke/agent-contract.sh` — passport schema + handoff integrity (orphan/when/forbidden/tail).
+2. `handoff-graph.yaml` — machine-readable (per-edge `when/payload`, forbidden ⊕ rescue/secret, `final-learning-tail` gate). **[done]**
+3. `smoke/agent-contract.sh` — passport schema + handoff integrity (orphan/when/forbidden/tail). **[done]**
 4. `skills/agent-session-review` (or workflow) — local session tail (brief/trace/reflection/most-important).
 5. `scripts/athena-postrun-report.mjs` — Markdown/HTML/JSON report after a meaningful run (`results-json {group_id,outcome,helps,next_action}`).
 6. `scripts/athena-report-quality-gate.mjs` — no raw OCR / local filenames / secrets.

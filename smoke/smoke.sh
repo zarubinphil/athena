@@ -181,5 +181,10 @@ if [ -x "$HERE/smoke/git-leak-guard.test.sh" ]; then
   chk "git-leak-guard 5 кейсов" "'$HERE/smoke/git-leak-guard.test.sh' >/dev/null 2>&1"
 else echo "  · git-leak-guard.test.sh нет (skip)"; fi
 
+echo "[agent-contract] Фаза 7: паспорта + handoff-граф integrity"
+if [ -x "$HERE/smoke/agent-contract.sh" ]; then
+  chk "agent-contract (7 паспортов + граф)" "'$HERE/smoke/agent-contract.sh' '$HERE' >/dev/null 2>&1"
+else echo "  · agent-contract.sh нет (skip)"; fi
+
 [ "$fail" = 0 ] && echo "SMOKE OK" || echo "SMOKE FAIL"
 exit "$fail"
