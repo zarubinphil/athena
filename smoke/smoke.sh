@@ -190,10 +190,15 @@ if [ -x "$HERE/smoke/git-leak-guard.test.sh" ]; then
   chk "git-leak-guard 5 кейсов" "'$HERE/smoke/git-leak-guard.test.sh' >/dev/null 2>&1"
 else echo "  · git-leak-guard.test.sh нет (skip)"; fi
 
-echo "[agent-contract] Фаза 7: паспорта + handoff-граф integrity"
+echo "[agent-contract] Фаза 7: паспорта + handoff-граф integrity + FSM + project-template + parity"
 if [ -x "$HERE/smoke/agent-contract.sh" ]; then
-  chk "agent-contract (7 паспортов + граф)" "'$HERE/smoke/agent-contract.sh' '$HERE' >/dev/null 2>&1"
+  chk "agent-contract (полный)" "'$HERE/smoke/agent-contract.sh' '$HERE' >/dev/null 2>&1"
 else echo "  · agent-contract.sh нет (skip)"; fi
+
+echo "[parity] синтетический route-card + drift-check"
+if [ -x "$HERE/smoke/parity-smoke.sh" ]; then
+  chk "parity-smoke (schema + required fields)" "'$HERE/smoke/parity-smoke.sh' '$HERE' >/dev/null 2>&1"
+else echo "  · parity-smoke.sh нет (skip)"; fi
 
 [ "$fail" = 0 ] && echo "SMOKE OK" || echo "SMOKE FAIL"
 exit "$fail"

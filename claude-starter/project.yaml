@@ -1,0 +1,43 @@
+# project.yaml — Athena project passport template
+# Copy to your project root; fill in the values marked {{PLACEHOLDER}}.
+# Validated by athena-guard (data_policy) and athena-router (capabilities + preferred_pair).
+# Spec: specs/07-local-agent-contract.md §project.yaml
+
+version: 1
+
+project:
+  id: "{{PROJECT_ID}}"        # unique slug, kebab-case, e.g. "my-app"
+  name: "{{PROJECT_NAME}}"    # human-readable name
+  description: "{{ONE_LINE_DESCRIPTION}}"
+
+# Data policy — governs how agents handle project content.
+# athena-guard enforces this before any cloud API call.
+data_policy:
+  sensitivity: low             # low | medium | high | critical
+  allow_cloud: true            # send content to cloud LLM APIs (Claude, Codex)
+  allow_embeddings: true       # generate vector embeddings of project content
+  retention_days: 90           # job artifact retention before deletion pipeline runs
+  require_upload_manifest: false  # require explicit manifest before any upload
+
+# Capabilities — what agent task classes are permitted for this project.
+# athena-router will not propose blocked classes.
+capabilities:
+  allowed:
+    - code-edit
+    - debug
+    - arch
+    - docs
+    - ui
+  blocked: []                  # e.g. [deploy, legal] if those should not run here
+
+# Preferred agent pair (overrides the global start matrix for this project).
+# Leave primary/reviewer empty to use the global matrix defaults.
+agents:
+  preferred_pair:
+    primary: ""                # "codex" | "claude" | "" (use matrix)
+    reviewer: ""               # "claude" | "codex" | "" (use matrix)
+
+# Steward governance — weekly improvement loop.
+steward:
+  max_proposals_per_week: 3   # improvement proposals athena-steward may surface
+  owner_review_required: true  # proposals need explicit owner sign-off before applying
