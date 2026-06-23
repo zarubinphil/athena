@@ -101,9 +101,55 @@ else
   command -v node >/dev/null 2>&1 || echo "  → node not found; skipping report+gate smoke"
 fi
 
+# 11. job-lifecycle.yaml exists and carries required FSM keys.
+LIFECYCLE="$ROOT/chezmoi/dot_agents/job-lifecycle.yaml"
+if [ ! -f "$LIFECYCLE" ]; then
+  bad "job-lifecycle.yaml missing"
+else
+  for key in initial_state states terminal_states invariants; do
+    grep -q "^$key:" "$LIFECYCLE" || bad "job-lifecycle.yaml missing top-level key: $key"
+  done
+  REQUIRED_STATES="Draft Staging ProjectDetection RouteProposed Approved Queued Running NeedsInput ReviewReady Delivered Archived Failed Retry"
+  for s in $REQUIRED_STATES; do
+    grep -q "^  $s:" "$LIFECYCLE" || bad "job-lifecycle.yaml missing state: $s"
+  done
+fi
+
+# 12. project.yaml template exists in claude-starter with required fields.
+PROJECT_YAML="$ROOT/claude-starter/project.yaml"
+if [ ! -f "$PROJECT_YAML" ]; then
+  bad "claude-starter/project.yaml missing"
+else
+  for field in data_policy capabilities agents steward sensitivity allow_cloud retention_days preferred_pair max_proposals_per_week; do
+    grep -q "$field" "$PROJECT_YAML" || bad "project.yaml missing field: $field"
+  done
+fi
+
+# 13. routing-evals.example.jsonl exists in claude-starter.
+EVALS_EXAMPLE="$ROOT/claude-starter/routing-evals.example.jsonl"
+[ -f "$EVALS_EXAMPLE" ] || bad "claude-starter/routing-evals.example.jsonl missing"
+
+# 14. athena-router passport carries start matrix (10 classes).
+ROUTER_PASSPORT="$ROOT/chezmoi/dot_agents/role-passports/athena-router.md"
+MATRIX_CLASSES="code-edit debug arch docs legal obsidian deploy ui security steward"
+if [ -f "$ROUTER_PASSPORT" ]; then
+  for cls in $MATRIX_CLASSES; do
+    grep -q "$cls" "$ROUTER_PASSPORT" || bad "athena-router.md start matrix missing class: $cls"
+  done
+fi
+
+# 15. parity-smoke.sh exists and passes.
+PARITY="$ROOT/smoke/parity-smoke.sh"
+if [ ! -f "$PARITY" ]; then
+  bad "smoke/parity-smoke.sh missing"
+elif [ -x "$PARITY" ]; then
+  "$PARITY" "$ROOT" >/dev/null 2>&1 || bad "parity-smoke.sh failed"
+fi
+
 if [ "$fail" -ne 0 ]; then
   echo "AGENT-CONTRACT FAIL" >&2
   exit 1
 fi
 echo "  ✓ 7 passports · graph integrity · learning-tail · session-review skill · report+gate"
+echo "  ✓ job-lifecycle FSM · project.yaml template · routing-evals format · start matrix · parity-smoke"
 echo "agent-contract OK"

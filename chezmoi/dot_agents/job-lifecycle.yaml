@@ -1,0 +1,79 @@
+# AthenaOS — Job lifecycle FSM (Phase 7, Local Agent Contract)
+# Declarative state machine; no runtime engine required.
+# The ledger records current_state; agents read it and enforce transitions.
+# Validated by smoke/agent-contract.sh.
+
+version: 1
+
+initial_state: Draft
+
+states:
+  Draft:
+    description: Job envelope created, inputs not yet validated.
+    transitions: [Staging, Failed]
+  Staging:
+    description: athena-guard running input census (sha256 + secret scan).
+    transitions: [ProjectDetection, Failed]
+  ProjectDetection:
+    description: Project identity resolved; data_policy loaded from project.yaml.
+    transitions: [RouteProposed, Failed]
+  RouteProposed:
+    description: athena-router emitted route card; awaiting human approval.
+    transitions: [Approved, Failed]
+  Approved:
+    description: Route approved (human or auto-policy); ready to queue.
+    transitions: [Queued]
+  Queued:
+    description: Waiting for execution slot.
+    transitions: [Running]
+  Running:
+    description: athena-runner executing on primary provider (local-first).
+    transitions: [NeedsInput, ReviewReady, Failed]
+  NeedsInput:
+    description: Execution paused; human response required before continuing.
+    transitions: [Running, Failed]
+  ReviewReady:
+    description: Artifacts produced; athena-reconciler coverage complete; awaiting reviewer.
+    transitions: [Delivered, Failed]
+  Delivered:
+    description: athena-reviewer verdict pass; athena-librarian vault write complete.
+    transitions: [Archived]
+  Archived:
+    description: Terminal. final-learning-tail written; durable in vault.
+    transitions: []
+  Failed:
+    description: Transition failure, execution error, or gate rejection.
+    transitions: [Retry]
+  Retry:
+    description: One rescue attempt via rescue-runner. Second failure → Failed (terminal).
+    transitions: [Running, Failed]
+
+terminal_states: [Archived, Failed]
+
+# Invariants — enforced by gates, not just convention.
+invariants:
+  - id: retry-once
+    rule: Retry is allowed at most once per job_id. A second failure goes to Failed (terminal).
+  - id: review-ready-gate
+    rule: ReviewReady is only reachable after athena-reconciler emits coverage_complete marker.
+  - id: delivered-gate
+    rule: Delivered is only reachable after athena-reviewer emits verdict:pass.
+  - id: archived-gate
+    rule: Archived requires final-learning-tail (brief_md + agent_trace + self_reflection + most_important).
+  - id: no-skip-approval
+    rule: Running is only reachable from Queued; Queued only from Approved. RouteProposed never skips to Running.
+  - id: no-vault-bypass
+    rule: Delivered requires the librarian path; runner may not write to vault directly.
+
+# Ledger fields written per-job.
+ledger_fields:
+  - job_id           # unique identifier
+  - project_id       # from project.yaml
+  - current_state    # one of the states above
+  - provider         # claude | codex
+  - entered_at       # ISO-8601 timestamp of current state entry
+  - history          # list of {state, entered_at}
+  - route_card       # emitted by athena-router
+  - coverage_marker  # emitted by athena-reconciler
+  - reviewer_verdict # emitted by athena-reviewer
+  - tail_written     # boolean; set by athena-librarian
