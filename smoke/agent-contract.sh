@@ -146,10 +146,48 @@ elif [ -x "$PARITY" ]; then
   "$PARITY" "$ROOT" >/dev/null 2>&1 || bad "parity-smoke.sh failed"
 fi
 
+# 16. Phase 8 — status + weekly report scripts exist (node syntax check).
+STATUS_SCRIPT="$ROOT/chezmoi/dot_agents/registry/scripts/athena-status.mjs"
+WEEKLY_SCRIPT="$ROOT/chezmoi/dot_agents/registry/scripts/athena-weekly-report.mjs"
+
+if command -v node >/dev/null 2>&1; then
+  [ -f "$STATUS_SCRIPT" ] || bad "athena-status.mjs missing"
+  [ -f "$WEEKLY_SCRIPT" ] || bad "athena-weekly-report.mjs missing"
+
+  if [ -f "$STATUS_SCRIPT" ]; then
+    # status with empty inputs → exit 0
+    node "$STATUS_SCRIPT" --evals=/dev/null --reports=/tmp/athena-smoke-status >/dev/null 2>&1 \
+      || bad "athena-status.mjs: non-zero exit on empty inputs"
+  fi
+
+  if [ -f "$WEEKLY_SCRIPT" ]; then
+    WEEKLY_TMP="$(mktemp -d /tmp/athena-smoke-weekly-XXXXXX)"
+    trap 'rm -rf "$WEEKLY_TMP"' EXIT
+    # synthetic eval → weekly MD produced → quality-gate pass
+    printf '{"ts":"2026-01-01T00:00:00Z","job_id":"j1","task_class":"code-edit","primary":"codex","reviewer":"claude","confidence":"high","why":["matrix"],"outcome":"delivered","correction":null}\n' \
+      > "$WEEKLY_TMP/evals.jsonl"
+    node "$WEEKLY_SCRIPT" --evals="$WEEKLY_TMP/evals.jsonl" --reports="$WEEKLY_TMP/reports" --quiet \
+      >/dev/null 2>&1 || bad "athena-weekly-report.mjs: non-zero exit on valid input"
+    WEEKLY_RPT="$(ls "$WEEKLY_TMP/reports/"*.md 2>/dev/null | head -1)"
+    if [ -n "$WEEKLY_RPT" ]; then
+      node "$ROOT/chezmoi/dot_agents/registry/scripts/athena-report-quality-gate.mjs" \
+        --report "$WEEKLY_RPT" >/dev/null 2>&1 \
+        || bad "weekly-report quality-gate: FAIL on synthetic report"
+    else
+      bad "athena-weekly-report.mjs: no .md produced"
+    fi
+  fi
+else
+  [ ! -f "$STATUS_SCRIPT" ]  && bad "athena-status.mjs missing"
+  [ ! -f "$WEEKLY_SCRIPT" ]  && bad "athena-weekly-report.mjs missing"
+  echo "  → node not found; skipping Phase 8 runtime smoke"
+fi
+
 if [ "$fail" -ne 0 ]; then
   echo "AGENT-CONTRACT FAIL" >&2
   exit 1
 fi
 echo "  ✓ 7 passports · graph integrity · learning-tail · session-review skill · report+gate"
 echo "  ✓ job-lifecycle FSM · project.yaml template · routing-evals format · start matrix · parity-smoke"
+echo "  ✓ Phase 8: status CLI · weekly-report · quality-gate on synthetic data"
 echo "agent-contract OK"

@@ -130,3 +130,11 @@ Postrun-report + quality-gate (нет OCR/secrets/без next_action — fail). 
 eval-feedback-loop замкнутым на router через `routing-evals.jsonl`.
 **Зачем:** Без контракта «агент выполнил задачу» — слоган. С контрактом — falsifiable. Каждый
 прогон оставляет accounting: brief/trace/self_reflection/most_important.
+
+## 20. Dashboard — thin status report (Фаза 8)
+**Что:** CLI статус-снапшот + weekly HTML-отчёт поверх Ф7 local-workflows. Без сервера и новой логики.
+**Как:** `athena-status.mjs` читает `~/.agents/routing-evals.jsonl` → ≤20-строчный сводный вывод
+(jobs/классы/split/коррекции/pending proposals). `athena-weekly-report.mjs` генерирует
+`weekly-YYYY-Www.md` (+ `.html`) из тех же eval-логов; quality-gate pass обязателен.
+**Зачем:** Видимость без overhead. Каждый routing-decision — falsifiable prediction;
+статус показывает тренд без ручного grep'а по логам.
