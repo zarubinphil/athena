@@ -55,9 +55,55 @@ else
   done
 fi
 
+# 7. agent-session-review skill exists and carries all four required blocks.
+SKILL_FILE="$ROOT/chezmoi/dot_claude/skills/agent-session-review/SKILL.md"
+if [ ! -f "$SKILL_FILE" ]; then
+  bad "agent-session-review SKILL.md missing"
+else
+  for block in brief_md agent_trace self_reflection most_important; do
+    grep -q "$block" "$SKILL_FILE" || bad "agent-session-review SKILL.md: missing block '$block'"
+  done
+fi
+
+# 8-10. Script smoke (requires node — skipped gracefully if absent).
+REPORT_SCRIPT="$ROOT/chezmoi/dot_agents/registry/scripts/athena-postrun-report.mjs"
+GATE_SCRIPT="$ROOT/chezmoi/dot_agents/registry/scripts/athena-report-quality-gate.mjs"
+
+if command -v node >/dev/null 2>&1 && [ -f "$REPORT_SCRIPT" ] && [ -f "$GATE_SCRIPT" ]; then
+  SMOKE_TMP="$(mktemp -d /tmp/athena-smoke-XXXXXX)"
+  trap 'rm -rf "$SMOKE_TMP"' EXIT
+
+  # 8. Synthetic postrun-report run — valid input → exit 0 + produces .md file.
+  printf '[{"group_id":"g1","outcome":"done","helps":"helped with X","next_action":"do Y"}]' \
+    > "$SMOKE_TMP/results.json"
+  ATHENA_REPORTS="$SMOKE_TMP/reports" node "$REPORT_SCRIPT" \
+    --results-json "$SMOKE_TMP/results.json" --run-id smoke --quiet \
+    && true || bad "postrun-report: exit non-zero on valid input"
+
+  GOOD_REPORT=$(ls "$SMOKE_TMP/reports/"*.md 2>/dev/null | head -1)
+  if [ -n "$GOOD_REPORT" ]; then
+    # 9. Quality gate on good report → must PASS (exit 0).
+    node "$GATE_SCRIPT" --report "$GOOD_REPORT" >/dev/null 2>&1 \
+      || bad "quality-gate: good report should PASS"
+  else
+    bad "postrun-report: no .md file produced"
+  fi
+
+  # 10. Quality gate on bad report (raw OCR marker, no outcome/next_action) → must FAIL (exit 1).
+  printf 'temp_image_20240101.HEIC dummy content no outcome here' \
+    > "$SMOKE_TMP/bad-report.md"
+  node "$GATE_SCRIPT" --report "$SMOKE_TMP/bad-report.md" >/dev/null 2>&1 \
+    && bad "quality-gate: bad report should FAIL" \
+    || true
+else
+  [ ! -f "$REPORT_SCRIPT" ] && bad "athena-postrun-report.mjs missing"
+  [ ! -f "$GATE_SCRIPT" ] && bad "athena-report-quality-gate.mjs missing"
+  command -v node >/dev/null 2>&1 || echo "  → node not found; skipping report+gate smoke"
+fi
+
 if [ "$fail" -ne 0 ]; then
   echo "AGENT-CONTRACT FAIL" >&2
   exit 1
 fi
-echo "  ✓ 7 passports · graph integrity · learning-tail"
+echo "  ✓ 7 passports · graph integrity · learning-tail · session-review skill · report+gate"
 echo "agent-contract OK"
