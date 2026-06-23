@@ -31,8 +31,17 @@ echo "[личное] нет имён/usernames/приватных идентиф
 # shellcheck disable=SC2034  # используется через eval в chk (строка 31)
 PERSONAL_RE='(Philipp|Filipp|Zarubin(?!phil)|Филипп|Кирилов|Ломоносов|Менделеев|Калачов|com\.zarubin|7teenno1)'
 chk "нет личных данных в публичных tracked-файлах" "! git -C '$HERE' grep -IPni -e \"\$PERSONAL_RE\" -- ':!smoke/smoke.sh' ':!docs/audit-2026-06-16/**' >/dev/null 2>&1"
-# Email автора в истории = PII вне file-grep. Разрешён только GitHub noreply.
-chk "нет личных email в авторах коммитов" "! git -C '$HERE' log --format='%ae %ce' | tr ' ' '\n' | grep -vE '(noreply|^\$)' | grep -q ."
+# Email автора = PII. Проверяем только коммиты ветки/PR, не всю историю репо.
+# CI checkout refs/pull/N/merge → HEAD = merge commit, HEAD^2 = PR tip, HEAD^1 = main tip.
+if _ec_p2=$(git -C "$HERE" rev-parse HEAD^2 2>/dev/null) && [ -n "$_ec_p2" ]; then
+  _ec_range="HEAD^1..$_ec_p2"
+elif _ec_base=$(git -C "$HERE" merge-base HEAD origin/main 2>/dev/null) && [ -n "$_ec_base" ]; then
+  _ec_range="$_ec_base..HEAD"
+else
+  _ec_range="HEAD"
+fi
+chk "нет личных email в авторах коммитов" \
+  "! git -C '$HERE' log '$_ec_range' --no-merges --format='%ae %ce' | tr ' ' '\n' | grep -vE '(noreply|^\$)' | grep -q ."
 
 echo "[канон] chezmoi-source Сознания на месте"
 for f in chezmoi/dot_claude/CLAUDE.md chezmoi/dot_claude/settings.json.tmpl chezmoi/dot_claude/AGENTS.md.tmpl chezmoi/dot_claude/hooks/security-guard.sh chezmoi/dot_claude/hooks/bash-guard.sh chezmoi/dot_claude/rules/structure.md; do
